@@ -38,7 +38,7 @@ const App = (props) => {
           <PrivateRoute exact path="/uploadTemplate" component={Template} />
           <PrivateRoute exact path="/addCampaignDetails" component={Campaign} />
           <PrivateRoute exact path="/uploadCSV" component={CSV} />
-          <PrivateRoute exact path="/" component={CSV} />
+          <PrivateRoute exact path="/" component={Template} />
           <PrivateRoute path="*" component={Template} />
         </Switch>
       </main>

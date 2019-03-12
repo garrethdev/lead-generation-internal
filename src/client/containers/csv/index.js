@@ -22,21 +22,11 @@ class CSVUpload extends React.Component {
     this.state = {
       campaignId: props.location ? (props.location.state ? props.location.state.id : '') : '',
       csvContent: null,
-      uploadingData: true,
+      uploadingData: false,
       enableSend: false,
       showScheduleDate: false,
       scheduleDate: moment().minute(roundedUp)
     };
-  }
-
-  componentDidMount() {
-    const { getLists } = this.props;
-    getLists()
-      .catch((error) => {
-        alert('Error Fetching Lists');
-        console.log('Error Fetching Lists', error);
-      })
-      .finally(() => this.setState({ uploadingData: false }));
   }
 
   handleCSVFile = (event) => {
@@ -154,37 +144,12 @@ class CSVUpload extends React.Component {
       .finally(() => this.setState({ uploadingData: false }));
   };
 
-  renderListItem = item => (
-    <div style={{ width: '100%' }}>
-      <li style={{ 'justify-content': 'space-between', width: '100%', padding: '10px' }} key={item.id} data-id={item.id}>
-        <span style={{ width: '100px' }} onClick={() => alert(item.name)}>
-          {item.name}
-        </span>
-        <span style={{ width: '100px' }} onClick={() => alert(item.stats.member_count)}>
-          {`${item.stats.member_count} contacts`}
-        </span>
-        <span style={{ width: '100px' }}>
-          <Button className="btn btn-primary" id="button-upload-member" color="secondary" onClick={() => this.handleUpload(item.id)}>Import CSV</Button>
-        </span>
-      </li>
-    </div>
-  );
-
   render() {
     const {
       uploadingData, enableSend, scheduleDate, showScheduleDate
     } = this.state;
-    const { lists } = this.props;
     return (
       <div className="container">
-        <br />
-        <h3>Lists</h3>
-        <br />
-        {
-          lists.map(l => this.renderListItem(l))
-        }
-        <br />
-        <h3>Select a CSV file:</h3>
         <br />
         <input type="file" name="file" id="csv-input" accept=".csv" onChange={this.handleCSVFile} />
         <br />
