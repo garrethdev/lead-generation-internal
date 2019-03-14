@@ -1,0 +1,31 @@
+.container {
+    background-color: white;
+    padding: 20px 50px 20px 50px;
+}
+.component-wrapper {
+    background-color: rgb(217, 217, 217);
+    margin: 20px;
+}
+.list-name {
+    width: 500px;
+    background-color: white;
+    padding: 10px;
+    margin-top: 10px;
+}
+.dropzone {
+    width: 500px;
+    height: 100px;
+    background-color: white;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.selected-list-item {
+    color: black;
+    font-size: 14px;
+}
+
+.list-item {
+    color: #919191;
+    font-size: 14px;
+}

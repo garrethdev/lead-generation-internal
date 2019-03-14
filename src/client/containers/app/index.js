@@ -3,10 +3,11 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import Login from '../login';
-import CSV from '../csv';
-import Campaign from '../campaigns';
+import Home from '../home';
+import NewCampaign from '../newCampaign';
 import Template from '../template';
-import NavigationBar from '../navigationBar';
+
+import './app.css';
 
 const App = (props) => {
   const PublicRoute = ({ component: Component, ...rest }) => (
@@ -31,14 +32,12 @@ const App = (props) => {
   );
   return (
     <div className="container app-wrapper">
-      {props.user && <NavigationBar />}
-      <main>
+      <label className="tag-line">Incertae.io Lead Generation Platform</label>
+        <main>
         <Switch>
           <PublicRoute exact path="/login" component={Login} />
-          <PrivateRoute exact path="/uploadTemplate" component={Template} />
-          <PrivateRoute exact path="/addCampaignDetails" component={Campaign} />
-          <PrivateRoute exact path="/uploadCSV" component={CSV} />
-          <PrivateRoute exact path="/" component={Template} />
+          <PrivateRoute exact path="/newCampaign" component={NewCampaign} />
+          <PrivateRoute exact path="/" component={Home} />
           <PrivateRoute path="*" component={Template} />
         </Switch>
       </main>

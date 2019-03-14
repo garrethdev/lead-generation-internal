@@ -2,7 +2,7 @@ const httpStatus = require('http-status');
 const APIError = require('../../helpers/APIErrors');
 
 function login(req, res, next) {
-  if (req.body.email === 'admin@gmail.com' && req.body.password === 'admin') {
+  if ((req.body.email === 'admin@gmail.com' && req.body.password === 'admin') || (req.body.email === 'user@gmail.com' && req.body.password === 'user')) {
     return res.json({
       user: req.body,
     });

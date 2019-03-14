@@ -8,10 +8,7 @@ import { saveCampaignContent } from '../../modules/mailChimp';
 class Template extends React.Component {
 
   exportTemplate = () => {
-    this.editor.exportHtml((data) => {
-      const { html } = data;
-      this.handleUpload(html);
-    });
+
   };
 
   handleUpload = (htmlContent) => {
@@ -19,7 +16,16 @@ class Template extends React.Component {
     saveCampaignContent(htmlContent);
   };
 
+  handleNext = () => {
+    const { component, handleNext } = this.props;
+    this.editor.exportHtml((data) => {
+      const { html } = data;
+      handleNext && handleNext(component.title, html);
+    });
+  };
+
   render() {
+    const { component } = this.props;
     return (
       <div className="container">
         <br />
@@ -29,7 +35,9 @@ class Template extends React.Component {
           />
         </div>
         <br />
-        <Button className="btn btn-primary" id="button-send" color="primary" onClick={this.exportTemplate}>Send</Button>
+        <Button className="btn btn-primary" id="button-send" color="primary" onClick={this.handleNext}>
+          {component.butttonTitle}
+        </Button>
       </div>
     );
   }

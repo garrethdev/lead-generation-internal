@@ -1,4 +1,5 @@
 import axios from 'axios';
+import moment from 'moment';
 
 export function batchSubmit(body) {
   return axios.post('/api/mailchimp/batches', { operations: body })
@@ -25,7 +26,8 @@ export function sendCampaign(id) {
 }
 
 export function scheduleCampaign(id, time) {
-  return axios.post(`/api/mailchimp/campaigns/${id}/actions/schedule`, { schedule_time: time })
+  const sendOn = moment.utc(time).format();
+  return axios.post(`/api/mailchimp/campaigns/${id}/actions/schedule`, { schedule_time: sendOn })
     .then(({ data }) => Promise.resolve(data))
     .catch(error => Promise.reject(error));
 }
@@ -36,6 +38,12 @@ export function getLists() {
     .catch(error => Promise.reject(error));
 }
 
+export function getListDetails(id) {
+  return axios.get(`/api/mailchimp/lists/${id}`)
+    .then(({ data }) => Promise.resolve(data))
+    .catch(error => Promise.reject(error));
+}
+
 export default {
-  batchSubmit, addMailChimpCampaign, updateCampaignContent, sendCampaign, scheduleCampaign, getLists
+  batchSubmit, addMailChimpCampaign, updateCampaignContent, sendCampaign, scheduleCampaign, getLists, getListDetails
 };

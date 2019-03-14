@@ -1,0 +1,9 @@
+.component-wrapper {
+    width: 1000px;
+    height: 500px;
+    background-color: red;
+}
+
+.hide-previous {
+    display: none;
+}

@@ -1,60 +1,80 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { push } from 'react-router-redux';
 import { Button } from 'reactstrap';
 import csv from 'csvtojson';
-import DateTime from 'react-datetime';
+import Dropzone from 'react-dropzone';
+import _ from 'lodash';
 import '../../../../node_modules/react-datetime/css/react-datetime.css';
-import moment from 'moment';
 import { LIST_ID } from '../../helpers/constants';
 import {
-  addMembers, sendCampaign, scheduleCampaign, getLists
+  addMembers, getLists
 } from '../../modules/mailChimp';
-import SpinnerLoader from '../../components/spinnerLoader';
 
-const minuteInterval = 15;
-const roundedUp = Math.ceil(moment().minute() / minuteInterval) * minuteInterval;
+import './csv.css';
 
 class CSVUpload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      campaignId: props.location ? (props.location.state ? props.location.state.id : '') : '',
       csvContent: null,
-      uploadingData: false,
-      enableSend: false,
-      showScheduleDate: false,
-      scheduleDate: moment().minute(roundedUp)
+      enableUpload: false,
+      selectedFileName: undefined,
+      existingLists: [],
+      selectedListIndex: null
     };
   }
 
-  handleCSVFile = (event) => {
-    const csvFile = event.target.files[0];
+  componentDidMount() {
+    const { getLists } = this.props;
+    getLists()
+      .then(({ lists = [] }) => {
+        if (lists.length > 0) {
+          const currentIndex = _.findIndex(lists, l => l.id === LIST_ID);
+          this.setState({ existingLists: _.map(lists, l => _.pick(l, ['id', 'name', 'campaign_defaults'])), selectedListIndex: (currentIndex > -1) ? currentIndex : 0 });
+        }
+      })
+      .catch(error => console.log('Error retriving lists', error))
+      .finally(() => this.setState({ uploadingData: false }));
+  }
 
-    const fileReader = new FileReader();
-    fileReader.readAsText(csvFile);
-    fileReader.onloadend = this.handleFileContent;
+  handleList = selectedListIndex => this.setState({ selectedListIndex });
+
+  onDropFile = (files) => {
+    if (files.length > 1) {
+      alert('only one file is allowed');
+    } else if (files.length === 1) {
+      const fileReader = new FileReader();
+      fileReader.readAsText(files[0]);
+      fileReader.onloadend = (e) => {
+        const headers = e.target.result.split('\n')[0];
+        if (headers.includes('Email Address') && headers.includes('First Name') && headers.includes('Last Name') && headers.includes('Company')) {
+          this.setState({
+            csvContent: e.target.result, enableUpload: true, selectedFileName: files[0].name
+          });
+        } else {
+          alert('Invalid format of CSV, please check and try again.');
+        }
+      };
+    }
   };
 
-  handleFileContent = (e) => {
-    this.setState({ csvContent: e.target.result, enableSend: false });
-  };
-
-  handleUpload = (id) => {
-    const { csvContent } = this.state;
-    const { addMembers } = this.props;
+  handleMenbersUpload = () => {
+    const { csvContent, existingLists, selectedListIndex } = this.state;
+    const { addMembers, showLoader } = this.props;
 
     if (!csvContent) {
       alert('Please select file first.');
+    } else if (selectedListIndex !== null) {
+      alert('No List Selected');
     } else {
-      this.setState({ uploadingData: true });
-
+      showLoader(true);
+      const listID = existingLists[selectedListIndex];
       csv().fromString(csvContent)
         .then((fetchedMembers) => {
           const members = fetchedMembers.map(m => ({
             method: 'post',
-            path: `/lists/${LIST_ID}/members`,
+            path: `/lists/${listID}/members`,
             body: JSON.stringify({
               email_address: m['Email Address'],
               status: 'subscribed',
@@ -66,119 +86,70 @@ class CSVUpload extends React.Component {
             })
           }));
           addMembers(members)
-            .then(() => this.setState({ enableSend: true }))
+            .then(() => {
+              // @TODO : enable send button
+            })
             .catch((error) => {
               console.log('error uploading csv data', error);
               alert('error uploading csv data');
             })
-            .finally(() => {
-              this.setState({ uploadingData: false });
-            });
+            .finally(() => showLoader(false));
         })
         .catch((error) => {
           console.log('Error while reading csv file', error);
           alert('Error while reading csv file, please try again.');
-          this.setState({ uploadingData: false });
+          showLoader(false);
         });
     }
   };
 
-  sendCampaignNow = () => {
-    const { campaignId } = this.state;
-    const {
-      sendCampaign, gotoHomePage
-    } = this.props;
-    this.setState({ uploadingData: true });
-    sendCampaign(campaignId)
-      .then(() => {
-        alert('campaign sent successfully!!!');
-        gotoHomePage();
-      })
-      .catch((error) => {
-        console.log('Error sending mail', error);
-        alert('Error sending mail, Please try again.');
-      })
-      .finally(() => this.setState({ uploadingData: false }));
-  };
-
-  handleScheduleDate = date => this.setState({ scheduleDate: date });
-
-  getValidDates = (current) => {
-    const yesterday = moment().subtract(1, 'day');
-    return current.isAfter(yesterday);
-  };
-
-  getValidTimes = (dateTime) => {
-    // date is today, so only allow future times
-    if (moment().isSame(dateTime, 'day')) {
-      return {
-        hours: { min: dateTime.hours(), max: 23, step: 1 },
-        minutes: { min: 0, max: 59, step: minuteInterval },
-      };
+  handleNext = () => {
+    const { existingLists, selectedListIndex } = this.state;
+    const { component, handleNext } = this.props;
+    if (selectedListIndex !== null) {
+      handleNext && handleNext(component.title, existingLists[selectedListIndex]);
+    } else {
+      alert('No List selected');
     }
-    // date is in the future, so allow all times
-    return {
-      hours: { min: 0, max: 23, step: 1 },
-      minutes: { min: 0, max: 59, step: minuteInterval },
-    };
-  };
-
-  scheduleCampaign = () => {
-    const { campaignId, scheduleDate } = this.state;
-    const { scheduleCampaign, gotoHomePage } = this.props;
-    if (moment().isAfter(scheduleDate)) {
-      alert('please select valid time');
-      return;
-    }
-    const sendOn = moment.utc(scheduleDate).format();
-    this.setState({ uploadingData: true });
-    scheduleCampaign(campaignId, sendOn)
-      .then(() => {
-        alert('campaign has been scheduled!!!');
-        gotoHomePage();
-      })
-      .catch((error) => {
-        console.log('Error sending mail', error);
-        alert('Error sending mail, Please try again.');
-      })
-      .finally(() => this.setState({ uploadingData: false }));
   };
 
   render() {
     const {
-      uploadingData, enableSend, scheduleDate, showScheduleDate
+      enableUpload, selectedFileName, existingLists, selectedListIndex
     } = this.state;
+    const { component } = this.props;
     return (
       <div className="container">
-        <br />
-        <input type="file" name="file" id="csv-input" accept=".csv" onChange={this.handleCSVFile} />
-        <br />
-        <br />
-        <Button className="btn btn-primary" id="button-upload-member" color="primary" onClick={this.handleUpload}>Upload Members</Button>
-        <br />
-        <br />
-        {
-          showScheduleDate
-          && (
-            <React.Fragment>
-              <DateTime
-                value={scheduleDate}
-                inputProps={{ readOnly: true }}
-                isValidDate={this.getValidDates}
-                timeConstraints={this.getValidTimes(scheduleDate)}
-                onChange={this.handleScheduleDate}
-                dateFormat="MMMM DD YYYY,"
-                closeOnSelect
-                closeOnTab
-              />
-              <br />
-            </React.Fragment>
-          )
-        }
-        <Button className="btn btn-primary" color="primary" id="button-send" disabled={!enableSend} onClick={this.sendCampaignNow}>Send now</Button>
-        <Button className="btn btn-primary ml-5" color="primary" id="button-schedule" disabled={!enableSend} onClick={showScheduleDate ? this.scheduleCampaign : () => this.setState({ showScheduleDate: true })}>{showScheduleDate ? 'Schedule' : 'Schedule Later'}</Button>
-        <br />
-        <SpinnerLoader isVisible={uploadingData} />
+        <div className="component-wrapper">
+        Upload Contact List
+          <div className="list-name">
+            <p>{(selectedListIndex !== null) ? existingLists[selectedListIndex].name : ''}</p>
+          </div>
+          <Button color="secondary" disabled={!enableUpload} onClick={this.handleMenbersUpload}>Upload</Button>
+          <div>
+            <Dropzone
+              accept=".csv,text/csv"
+              onDrop={this.onDropFile}
+              onDropRejected={() => alert('Invalid format of CSV, please check and try again.')}
+            >
+              {({ getRootProps }) => (
+                <div className="dropzone" {...getRootProps()}>
+                  <p>{selectedFileName || 'Drop in contact list'}</p>
+                </div>
+              )}
+            </Dropzone>
+          </div>
+          <br />
+          Existing List
+          <div className="list-name">
+            {
+              existingLists.map((l, i) => <div className={(selectedListIndex === i) ? 'selected-list-item' : 'list-item'} key={l.id} onClick={() => this.handleList(i)}>{l.name}</div>)
+            }
+          </div>
+        </div>
+        <Button className="btn btn-primary" color="primary" id="button-add-campaign" onClick={this.handleNext}>
+          {component.butttonTitle}
+        </Button>
       </div>
     );
   }
@@ -190,11 +161,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getLists,
-  addMembers,
-  sendCampaign,
-  scheduleCampaign,
-  gotoHomePage: () => push('/'),
-  gotoAddCampaignDetails: () => push('/addCampaignDetails')
+  addMembers
 }, dispatch);
 
 export default connect(
