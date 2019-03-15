@@ -29,12 +29,12 @@ export default (state = initialState, action) => {
   }
 };
 
+export const getLists = () => dispatch => mailchimpService.getLists();
 export const addMembers = members => dispatch => mailchimpService.batchSubmit(members);
 export const addMailChimpCampaign = body => dispatch => mailchimpService.addMailChimpCampaign(body);
 export const updateCampaignContent = (id, body) => dispatch => mailchimpService.updateCampaignContent(id, body);
-export const sendCampaign = id => dispatch => mailchimpService.sendCampaign(id);
 export const scheduleCampaign = (id, time) => dispatch => mailchimpService.scheduleCampaign(id, time);
-export const getLists = () => dispatch => mailchimpService.getLists();
+export const sendCampaign = id => dispatch => mailchimpService.sendCampaign(id);
 export const getListDetails = id => dispatch => mailchimpService.getListDetails(id)
   .then(({ details = {} }) => {
     const listDetails = _.pick(details, ['id', 'name', 'contact', 'stats.member_count']);
@@ -44,7 +44,6 @@ export const getListDetails = id => dispatch => mailchimpService.getListDetails(
     });
     return listDetails;
   });
-
 export const saveCampaignContent = content => (dispatch) => {
   dispatch(push('/addCampaignDetails'));
   dispatch({

@@ -3,7 +3,7 @@ const request = require('request-promise');
 const mailchimpConfig = {
   baseUrl: 'https://us20.api.mailchimp.com/3.0',
   username: 'any',
-  password: process.env.MAILCHIMP_PASS,
+  password: '29f6d4a80e45318947e4a9b7a6a1dc63-us20',
 };
 
 function actualMailchimpRequest(req) {

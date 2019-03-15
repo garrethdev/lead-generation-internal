@@ -2,12 +2,16 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { Button } from 'reactstrap';
 import Login from '../login';
 import Home from '../home';
 import NewCampaign from '../newCampaign';
-import Template from '../template';
 
+import Template from '../template';
 import './app.css';
+import { bindActionCreators } from 'redux';
+import { logInUser, logOutUser } from '../../modules/auth';
+import { push } from 'react-router-redux';
 
 const App = (props) => {
   const PublicRoute = ({ component: Component, ...rest }) => (
@@ -32,8 +36,18 @@ const App = (props) => {
   );
   return (
     <div className="container app-wrapper">
-      <label className="tag-line">Incertae.io Lead Generation Platform</label>
-        <main>
+      {
+        props.user
+          ? (
+            <div>
+              <label className="tag-line">Incertae.io Lead Generation Platform</label>
+              <Button className="log-out" outline color="secondary" id="log-out" onClick={props.logOutUser}>
+                LOGOUT
+              </Button>
+            </div>
+          ) : null
+      }
+      <main>
         <Switch>
           <PublicRoute exact path="/login" component={Login} />
           <PrivateRoute exact path="/newCampaign" component={NewCampaign} />
@@ -49,7 +63,11 @@ const mapStateToProps = state => ({
   user: state.auth.user,
 });
 
+const mapDispatchToProps = dispatch => bindActionCreators({
+  logOutUser,
+}, dispatch);
+
 export default withRouter(connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(App));

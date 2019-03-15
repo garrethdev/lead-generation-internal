@@ -48,9 +48,13 @@ class NewCampaign extends React.Component {
       componentDetails,
       currentComponentIndex: 0,
       uploadingData: false,
-      listDetails: undefined,
-      html: undefined,
-      scheduleDate: undefined,
+      campaignDetails: {
+        listDetails: undefined,
+        html: undefined,
+        htmlDesign: undefined,
+        scheduleDate: undefined,
+        subjectLine: undefined,
+      }
     };
   }
 
@@ -60,60 +64,65 @@ class NewCampaign extends React.Component {
       updateCampaignContent,
       scheduleCampaign,
     } = this.props;
-    const { listDetails, html, scheduleDate } = this.state;
+    const {
+      listDetails, html, scheduleDate, subjectLine
+    } = this.state.campaignDetails;
     debugger;
     // create campaign, update, send
     const body = {
       recipients: { list_id: listDetails.id },
       type: 'regular',
       settings: {
-        subject_line: listDetails.campaign_defaults.subject || 'Hello There,',
+        subject_line: subjectLine || listDetails.campaign_defaults.subject || 'Hello There,',
         reply_to: listDetails.campaign_defaults.from_email,
         from_name: listDetails.campaign_defaults.from_name
       }
     };
 
+    this.showLoader(true);
     addMailChimpCampaign(body)
       .then(({ id }) => {
-        debugger;
         updateCampaignContent(id, { html })
           .then(() => {
             scheduleCampaign(id, scheduleDate)
-              .then((res) => {
-                debugger;
+              .then(() => {
+                alert('campaign sent successfully');
+                this.showLoader(false);
               })
               .catch((error) => {
-                debugger;
-                this.setState({ uploadingData: false });
+                this.showLoader(false);
                 console.log('Error scheduling campaign', error);
                 alert('Error scheduling campaign, Please try again.');
               });
           })
           .catch((error) => {
-            debugger;
-            this.setState({ uploadingData: false });
+            this.showLoader(false);
             console.log('Error uploading template', error);
             alert('Error uploading template, Please try again.');
           });
       })
       .catch((error) => {
-        debugger;
-        this.setState({ uploadingData: false });
+        this.showLoader(false);
         console.log('Error adding campaign', error);
         alert('Error adding campaign, Please try again.');
       });
   };
 
   handleNext = (componentTitle, value) => {
+    const { currentComponentIndex } = this.state;
+    const campaignDetails = { ...this.state.campaignDetails };
     switch (componentTitle) {
       case CONTACT_LIST:
-        this.setState({ listDetails: value });
+        campaignDetails.listDetails = value;
+        // this.setState({ listDetails: value });
         break;
       case TEMPLATE:
-        this.setState({ html: value });
+        campaignDetails.html = value.html;
+        campaignDetails.htmlDesign = value.htmlDesign;
         break;
       case SCHEDULING:
-        this.setState({ scheduleDate: value });
+        campaignDetails.scheduleDate = value.scheduleDate;
+        campaignDetails.subjectLine = value.subjectLine;
         break;
       case RECAP:
         this.sendCampaign();
@@ -121,29 +130,51 @@ class NewCampaign extends React.Component {
       default:
         break;
     }
-    const { currentComponentIndex } = this.state;
-    if (componentDetails.length > currentComponentIndex) {
-      this.setState({ currentComponentIndex: currentComponentIndex + 1 });
-    }
+    debugger;
+    this.setState({
+      campaignDetails,
+      currentComponentIndex: (componentDetails.length - 1 > currentComponentIndex) ? currentComponentIndex + 1 : currentComponentIndex
+    });
+  };
+
+  editTemplate = () => {
+    this.setState({ currentComponentIndex: 1 }); // 1 is template index
   };
 
   showLoader = (show = false) => this.setState({ uploadingData: show });
 
   render() {
     const {
-      componentDetails, currentComponentIndex, uploadingData, listDetails, html, scheduleDate
+      componentDetails, currentComponentIndex, uploadingData, campaignDetails
     } = this.state;
     const currentComponent = componentDetails[currentComponentIndex];
-    const campaignDetails = { listDetails, html, scheduleDate };
-
     return (
-      <div className="container">
+      <div className="container main-wrapper">
         <label onClick={() => console.log('Ongoing Campaign')}>{`New Campaign ~ ${currentComponent.title}`}</label>
+        <div className="tab">
+          <ul className="tabs">
+            {
+              componentDetails.map((c, i) => {
+                if (i === currentComponentIndex && i === (componentDetails.length - 1)) {
+                  return <li key={i.toString()}><span className="active last" /></li>;
+                }
+                if (i === currentComponentIndex) {
+                  return <li key={i.toString()}><span className="active" /></li>;
+                }
+                if (i === (componentDetails.length - 1)) {
+                  return <li key={i.toString()}><span className="last" /></li>;
+                }
+                return <li key={i.toString()}><span /></li>;
+              })
+            }
+          </ul>
+        </div>
         <div className="component-wrapper">
           {React.createElement(currentComponent.component, {
             component: currentComponent,
             campaignDetails,
             handleNext: this.handleNext,
+            editTemplate: this.editTemplate,
             showLoader: this.showLoader
           })}
         </div>

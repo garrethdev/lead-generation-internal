@@ -1,26 +1,20 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Button } from 'reactstrap';
 import EmailEditor from 'react-email-editor';
-import { saveCampaignContent } from '../../modules/mailChimp';
 
-class Template extends React.Component {
-
-  exportTemplate = () => {
-
-  };
-
-  handleUpload = (htmlContent) => {
-    const { saveCampaignContent } = this.props;
-    saveCampaignContent(htmlContent);
-  };
+export default class Template extends React.Component {
+  componentDidMount() {
+    const { campaignDetails: { htmlDesign } } = this.props;
+    if (htmlDesign) {
+      this.editor.loadDesign(htmlDesign);
+    }
+  }
 
   handleNext = () => {
     const { component, handleNext } = this.props;
     this.editor.exportHtml((data) => {
-      const { html } = data;
-      handleNext && handleNext(component.title, html);
+      const { html, design } = data;
+      handleNext && handleNext(component.title, { html, htmlDesign: design });
     });
   };
 
@@ -29,25 +23,16 @@ class Template extends React.Component {
     return (
       <div className="container">
         <br />
-        <div>
+        <div className="editor-element">
           <EmailEditor
             ref={(editor) => { this.editor = editor; }}
           />
         </div>
         <br />
-        <Button className="btn btn-primary" id="button-send" color="primary" onClick={this.handleNext}>
+        <Button className="btn btn-primary nxt-btn" id="button-send" color="primary" onClick={this.handleNext}>
           {component.butttonTitle}
         </Button>
       </div>
     );
   }
 }
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  saveCampaignContent
-}, dispatch);
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(Template);

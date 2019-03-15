@@ -1,25 +1,27 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { push } from 'react-router-redux';
-import { Button } from 'reactstrap';
+import { Button, Input } from 'reactstrap';
 import DateTime from 'react-datetime';
 import moment from 'moment';
-import { addMailChimpCampaign, updateCampaignContent } from '../../modules/mailChimp';
 
 const minuteInterval = 15;
 const roundedUp = Math.ceil(moment().minute() / minuteInterval) * minuteInterval;
 
-class Schedule extends React.Component {
+export default class Schedule extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      subjectLine: '',
-      previewText: '',
-      scheduleDate: moment().minute(roundedUp),
+      subjectLine: props.campaignDetails ? props.campaignDetails.subjectLine : '',
+      scheduleDate: props.campaignDetails ? moment(props.campaignDetails.scheduleDate).minute(roundedUp) : moment().minute(roundedUp),
       uploadingData: false
     };
   }
+
+  handleChange = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const { name, value } = e.target;
+    this.setState({ [name]: value });
+  };
 
   handleScheduleDate = date => this.setState({ scheduleDate: date });
 
@@ -44,42 +46,51 @@ class Schedule extends React.Component {
   };
 
   handleNext = () => {
-    const { scheduleDate } = this.state;
+    const { scheduleDate, subjectLine } = this.state;
     const { component, handleNext } = this.props;
-    handleNext && handleNext(component.title, scheduleDate);
+    if (!subjectLine) {
+      alert('please add subject');
+    } else {
+      handleNext && handleNext(component.title, { scheduleDate, subjectLine });
+    }
   };
 
   render() {
-    const { scheduleDate, uploadingData } = this.state;
+    const { scheduleDate, uploadingData, subjectLine } = this.state;
     const { component } = this.props;
     return (
       <div className="container">
+          <label>Subject</label>
+        <div className="date-format">
+          <Input type="text" name="subjectLine" id="subjectLine" placeholder="Add the subject for your campaign" value={subjectLine} onChange={this.handleChange} required />
+        </div>
+          <label>Date</label>
         <DateTime
           value={scheduleDate}
           inputProps={{ readOnly: true }}
           isValidDate={this.getValidDates}
           timeConstraints={this.getValidTimes(scheduleDate)}
           onChange={this.handleScheduleDate}
-          dateFormat="MMMM DD YYYY,"
+          timeFormat={false}
+          closeOnSelect
+          closeOnTab
+        />
+          <label>Time</label>
+        <DateTime
+          value={scheduleDate}
+          inputProps={{ readOnly: true }}
+          isValidDate={this.getValidDates}
+          timeConstraints={this.getValidTimes(scheduleDate)}
+          onChange={this.handleScheduleDate}
+          dateFormat={false}
           closeOnSelect
           closeOnTab
         />
         <br />
-        <Button className="btn btn-primary" color="primary" id="button-add-campaign" onClick={this.handleNext}>
+        <Button className="btn btn-primary nxt-btn" color="primary" id="button-add-campaign" onClick={this.handleNext}>
           {component.butttonTitle}
         </Button>
       </div>
     );
   }
 }
-
-const mapDispatchToProps = dispatch => bindActionCreators({
-  addMailChimpCampaign,
-  updateCampaignContent,
-  gotoAddTemplate: id => push('/uploadCSV', { id })
-}, dispatch);
-
-export default connect(
-  null,
-  mapDispatchToProps
-)(Schedule);

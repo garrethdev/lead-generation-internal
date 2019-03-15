@@ -10,7 +10,12 @@
     width: 500px;
     background-color: white;
     padding: 10px;
-    margin-top: 10px;
+    }
+.list-input button {
+    min-width: 150px;
+    background: #2c2c2c !important;
+    border-radius: 0;
+    line-height: 20px;
 }
 .dropzone {
     width: 500px;
@@ -28,4 +33,15 @@
 .list-item {
     color: #919191;
     font-size: 14px;
+}
+.list-input {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.nxt-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    min-width: 160px;
 }

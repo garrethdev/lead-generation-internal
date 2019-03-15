@@ -3,7 +3,7 @@ import { push } from 'react-router-redux';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
-  Col, Button, Form, FormGroup, Label, Input
+  Col, Button, Form, FormGroup, Input
 } from 'reactstrap';
 
 import {
@@ -58,21 +58,20 @@ class Login extends React.Component {
       <div className="login-wrapper">
         <Form onSubmit={this.handleSubmit}>
           <FormGroup row>
-            <Label for="email" sm={2}>Email</Label>
             <Col sm={10}>
+              Email
               <Input type="email" name="email" id="email-input" placeholder="Email" value={credentials.email} onChange={this.handleChange} required />
             </Col>
           </FormGroup>
           <FormGroup row>
-            <Label for="password" sm={2}>Password</Label>
             <Col sm={10}>
+              Password
               <Input type="password" name="password" id="password-input" placeholder="Password" value={credentials.password} onChange={this.handleChange} required />
             </Col>
           </FormGroup>
           <FormGroup check row>
-            <Col sm={{ size: 10, offset: 2 }}>
-              <Button type="submit" id="submit-button">Submit</Button>
-            </Col>
+            <br />
+            <Button type="submit" id="submit-button">Submit</Button>
           </FormGroup>
         </Form>
       </div>

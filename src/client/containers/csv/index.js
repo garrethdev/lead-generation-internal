@@ -19,6 +19,7 @@ class CSVUpload extends React.Component {
     this.state = {
       csvContent: null,
       enableUpload: false,
+      enableSend: false,
       selectedFileName: undefined,
       existingLists: [],
       selectedListIndex: null
@@ -26,7 +27,8 @@ class CSVUpload extends React.Component {
   }
 
   componentDidMount() {
-    const { getLists } = this.props;
+    const { getLists, showLoader } = this.props;
+    showLoader(true);
     getLists()
       .then(({ lists = [] }) => {
         if (lists.length > 0) {
@@ -35,7 +37,7 @@ class CSVUpload extends React.Component {
         }
       })
       .catch(error => console.log('Error retriving lists', error))
-      .finally(() => this.setState({ uploadingData: false }));
+      .finally(() => showLoader(false));
   }
 
   handleList = selectedListIndex => this.setState({ selectedListIndex });
@@ -62,10 +64,9 @@ class CSVUpload extends React.Component {
   handleMenbersUpload = () => {
     const { csvContent, existingLists, selectedListIndex } = this.state;
     const { addMembers, showLoader } = this.props;
-
     if (!csvContent) {
       alert('Please select file first.');
-    } else if (selectedListIndex !== null) {
+    } else if (selectedListIndex === null) {
       alert('No List Selected');
     } else {
       showLoader(true);
@@ -88,6 +89,7 @@ class CSVUpload extends React.Component {
           addMembers(members)
             .then(() => {
               // @TODO : enable send button
+              this.setState({ enableSend: true });
             })
             .catch((error) => {
               console.log('error uploading csv data', error);
@@ -104,12 +106,14 @@ class CSVUpload extends React.Component {
   };
 
   handleNext = () => {
-    const { existingLists, selectedListIndex } = this.state;
+    const { enableSend, existingLists, selectedListIndex } = this.state;
     const { component, handleNext } = this.props;
-    if (selectedListIndex !== null) {
-      handleNext && handleNext(component.title, existingLists[selectedListIndex]);
-    } else {
+    if (selectedListIndex === null) {
       alert('No List selected');
+    } else if (!enableSend) {
+      alert('Please upload the contact first.');
+    } else {
+      handleNext && handleNext(component.title, existingLists[selectedListIndex]);
     }
   };
 
@@ -122,10 +126,12 @@ class CSVUpload extends React.Component {
       <div className="container">
         <div className="component-wrapper">
         Upload Contact List
-          <div className="list-name">
-            <p>{(selectedListIndex !== null) ? existingLists[selectedListIndex].name : ''}</p>
+          <div className="list-input">
+            <div className="list-name">
+              <p>{(selectedListIndex !== null) ? existingLists[selectedListIndex].name : ''}</p>
+            </div>
+            <Button color="secondary" disabled={!enableUpload} onClick={this.handleMenbersUpload}>Upload</Button>
           </div>
-          <Button color="secondary" disabled={!enableUpload} onClick={this.handleMenbersUpload}>Upload</Button>
           <div>
             <Dropzone
               accept=".csv,text/csv"
@@ -134,7 +140,7 @@ class CSVUpload extends React.Component {
             >
               {({ getRootProps }) => (
                 <div className="dropzone" {...getRootProps()}>
-                  <p>{selectedFileName || 'Drop in contact list'}</p>
+                  <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
                 </div>
               )}
             </Dropzone>
@@ -147,7 +153,7 @@ class CSVUpload extends React.Component {
             }
           </div>
         </div>
-        <Button className="btn btn-primary" color="primary" id="button-add-campaign" onClick={this.handleNext}>
+        <Button className="btn btn-primary nxt-btn" color="primary" id="button-add-campaign" onClick={this.handleNext}>
           {component.butttonTitle}
         </Button>
       </div>
