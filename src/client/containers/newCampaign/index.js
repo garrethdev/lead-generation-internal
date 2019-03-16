@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
+import { Alert } from 'reactstrap';
 import { addMailChimpCampaign, updateCampaignContent, scheduleCampaign } from '../../modules/mailChimp';
 
 import './newCampaign.css';
@@ -86,7 +87,9 @@ class NewCampaign extends React.Component {
           .then(() => {
             scheduleCampaign(id, scheduleDate)
               .then(() => {
-                alert('campaign sent successfully');
+                this.setState({ enableSend: true, showAlert: 'Successfully Scheduled!!!' }, () => {
+                  setTimeout(() => this.setState({ showAlert: false }), 3000);
+                });
                 this.showLoader(false);
               })
               .catch((error) => {
@@ -114,7 +117,6 @@ class NewCampaign extends React.Component {
     switch (componentTitle) {
       case CONTACT_LIST:
         campaignDetails.listDetails = value;
-        // this.setState({ listDetails: value });
         break;
       case TEMPLATE:
         campaignDetails.html = value.html;
@@ -130,7 +132,6 @@ class NewCampaign extends React.Component {
       default:
         break;
     }
-    debugger;
     this.setState({
       campaignDetails,
       currentComponentIndex: (componentDetails.length - 1 > currentComponentIndex) ? currentComponentIndex + 1 : currentComponentIndex
@@ -145,11 +146,11 @@ class NewCampaign extends React.Component {
 
   render() {
     const {
-      componentDetails, currentComponentIndex, uploadingData, campaignDetails
+      componentDetails, currentComponentIndex, uploadingData, campaignDetails, showAlert
     } = this.state;
     const currentComponent = componentDetails[currentComponentIndex];
     return (
-      <div className="container main-wrapper">
+      <div className="main-wrapper">
         <label onClick={() => console.log('Ongoing Campaign')}>{`New Campaign ~ ${currentComponent.title}`}</label>
         <div className="tab">
           <ul className="tabs">
@@ -178,6 +179,9 @@ class NewCampaign extends React.Component {
             showLoader: this.showLoader
           })}
         </div>
+        <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
+          {showAlert}
+        </Alert>
         <SpinnerLoader isVisible={uploadingData} />
       </div>
     );

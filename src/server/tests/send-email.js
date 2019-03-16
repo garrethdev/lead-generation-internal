@@ -1,5 +1,4 @@
 const request = require('supertest-as-promised');
-const httpStatus = require('http-status');
 const chai = require('chai');
 const server = require('../index');
 

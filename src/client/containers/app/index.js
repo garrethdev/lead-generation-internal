@@ -2,16 +2,15 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { Button } from 'reactstrap';
 import Login from '../login';
 import Home from '../home';
-import NewCampaign from '../newCampaign';
 
+import NewCampaign from '../newCampaign';
 import Template from '../template';
 import './app.css';
-import { bindActionCreators } from 'redux';
-import { logInUser, logOutUser } from '../../modules/auth';
-import { push } from 'react-router-redux';
+import { logOutUser } from '../../modules/auth';
 
 const App = (props) => {
   const PublicRoute = ({ component: Component, ...rest }) => (

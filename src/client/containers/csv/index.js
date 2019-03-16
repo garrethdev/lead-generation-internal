@@ -1,15 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Button } from 'reactstrap';
+import {
+  Alert, Button, Col, FormGroup, Input, Label, Row, Tooltip
+} from 'reactstrap';
 import csv from 'csvtojson';
 import Dropzone from 'react-dropzone';
 import _ from 'lodash';
 import '../../../../node_modules/react-datetime/css/react-datetime.css';
-import { LIST_ID } from '../../helpers/constants';
-import {
-  addMembers, getLists
-} from '../../modules/mailChimp';
+import { addMembers, getLists } from '../../modules/mailChimp';
 
 import './csv.css';
 
@@ -32,8 +31,7 @@ class CSVUpload extends React.Component {
     getLists()
       .then(({ lists = [] }) => {
         if (lists.length > 0) {
-          const currentIndex = _.findIndex(lists, l => l.id === LIST_ID);
-          this.setState({ existingLists: _.map(lists, l => _.pick(l, ['id', 'name', 'campaign_defaults'])), selectedListIndex: (currentIndex > -1) ? currentIndex : 0 });
+          this.setState({ existingLists: _.map(lists, l => _.pick(l, ['id', 'name', 'campaign_defaults'])), selectedListIndex: 0 });
         }
       })
       .catch(error => console.log('Error retriving lists', error))
@@ -64,9 +62,8 @@ class CSVUpload extends React.Component {
   handleMenbersUpload = () => {
     const { csvContent, existingLists, selectedListIndex } = this.state;
     const { addMembers, showLoader } = this.props;
-    if (!csvContent) {
-      alert('Please select file first.');
-    } else if (selectedListIndex === null) {
+    if (!csvContent) return;
+    if (selectedListIndex === null) {
       alert('No List Selected');
     } else {
       showLoader(true);
@@ -89,7 +86,9 @@ class CSVUpload extends React.Component {
           addMembers(members)
             .then(() => {
               // @TODO : enable send button
-              this.setState({ enableSend: true });
+              this.setState({ enableSend: true, showAlert: 'Uploaded Successfully!!!' }, () => {
+                setTimeout(() => this.setState({ showAlert: false }), 3000);
+              });
             })
             .catch((error) => {
               console.log('error uploading csv data', error);
@@ -108,54 +107,98 @@ class CSVUpload extends React.Component {
   handleNext = () => {
     const { enableSend, existingLists, selectedListIndex } = this.state;
     const { component, handleNext } = this.props;
-    if (selectedListIndex === null) {
-      alert('No List selected');
-    } else if (!enableSend) {
-      alert('Please upload the contact first.');
-    } else {
-      handleNext && handleNext(component.title, existingLists[selectedListIndex]);
-    }
+    if (selectedListIndex === null) return;
+    if (!enableSend) return;
+    handleNext && handleNext(component.title, existingLists[selectedListIndex]);
   };
 
   render() {
     const {
-      enableUpload, selectedFileName, existingLists, selectedListIndex
+      enableUpload, enableSend, selectedFileName, existingLists, selectedListIndex, showAlert
     } = this.state;
     const { component } = this.props;
     return (
-      <div className="container">
+      <div>
         <div className="component-wrapper">
-        Upload Contact List
-          <div className="list-input">
-            <div className="list-name">
-              <p>{(selectedListIndex !== null) ? existingLists[selectedListIndex].name : ''}</p>
-            </div>
-            <Button color="secondary" disabled={!enableUpload} onClick={this.handleMenbersUpload}>Upload</Button>
-          </div>
-          <div>
-            <Dropzone
-              accept=".csv,text/csv"
-              onDrop={this.onDropFile}
-              onDropRejected={() => alert('Invalid format of CSV, please check and try again.')}
-            >
-              {({ getRootProps }) => (
-                <div className="dropzone" {...getRootProps()}>
-                  <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
+          <Row>
+            <Col md={10}>
+              <FormGroup>
+                <Label for="exampleSelect">Upload Contact List</Label>
+                <Input
+                  className="list-input"
+                  type="select"
+                  name="select"
+                  id="exampleSelect"
+                  onChange={(event) => {
+                    const { value } = event.target;
+                    this.handleList(parseInt(value, 10));
+                  }}
+                >
+                  {
+                    existingLists.map((l, i) => <option value={i} key={l.id}>{l.name}</option>)
+                  }
+                </Input>
+                <div>
+                  <Dropzone
+                    accept=".csv,text/csv"
+                    onDrop={this.onDropFile}
+                    onDropRejected={() => alert('Invalid format of CSV, please check and try again.')}
+                  >
+                    {({ getRootProps }) => (
+                      <div className="dropzone" {...getRootProps()}>
+                        <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
+                      </div>
+                    )}
+                  </Dropzone>
+                  {
+                    enableUpload && <Label className="note">Note: Click on upload to add contacts.</Label>
+                  }
                 </div>
-              )}
-            </Dropzone>
-          </div>
-          <br />
-          Existing List
-          <div className="list-name">
-            {
-              existingLists.map((l, i) => <div className={(selectedListIndex === i) ? 'selected-list-item' : 'list-item'} key={l.id} onClick={() => this.handleList(i)}>{l.name}</div>)
-            }
-          </div>
+                <br />
+                <Label>Existing List</Label>
+                <div className="list-name">
+                  {
+                    existingLists.map((l, i) => <div className={(selectedListIndex === i) ? 'selected-list-item' : 'list-item'} key={l.id}>{l.name}</div>)
+                  }
+                </div>
+              </FormGroup>
+            </Col>
+            <Col md={2}>
+              <Button
+                id="Tooltip-1"
+                color="dark"
+                onClick={this.handleMenbersUpload}
+                className="upload-btn"
+              >
+                {
+                  !enableUpload
+                  && (
+                    <Tooltip placement="top" isOpen={this.state.tooltipOpen1} target="Tooltip-1" toggle={() => this.setState({ tooltipOpen1: !this.state.tooltipOpen1 })}>
+                      Please add csv first!
+                    </Tooltip>
+                  )
+                }
+                Upload
+              </Button>
+            </Col>
+          </Row>
         </div>
-        <Button className="btn btn-primary nxt-btn" color="primary" id="button-add-campaign" onClick={this.handleNext}>
-          {component.butttonTitle}
-        </Button>
+        <div className="btn-next">
+          <Button id="Tooltip-2" className="btn btn-primary" color="primary" onClick={this.handleNext}>
+            {
+              !(enableUpload && enableSend)
+              && (
+                <Tooltip placement="top" isOpen={this.state.tooltipOpen2} target="Tooltip-2" toggle={() => this.setState({ tooltipOpen2: !this.state.tooltipOpen2 })}>
+                  Please upload csv first!
+                </Tooltip>
+              )
+            }
+            {component.butttonTitle}
+          </Button>
+        </div>
+        <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
+          {showAlert}
+        </Alert>
       </div>
     );
   }

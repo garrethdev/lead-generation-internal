@@ -11,6 +11,7 @@
     "comma-dangle": "off",
     "no-shadow": "off",
     "no-useless-escape": "off",
+    "max-len": "off",
     "react/jsx-filename-extension": "off",
     "react/prefer-stateless-function": "off",
     "react/no-unused-state": "off",

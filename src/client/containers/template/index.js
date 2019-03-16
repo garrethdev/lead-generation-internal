@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from 'reactstrap';
+import { Button, Col } from 'reactstrap';
 import EmailEditor from 'react-email-editor';
 
 export default class Template extends React.Component {
@@ -29,9 +29,13 @@ export default class Template extends React.Component {
           />
         </div>
         <br />
-        <Button className="btn btn-primary nxt-btn" id="button-send" color="primary" onClick={this.handleNext}>
-          {component.butttonTitle}
-        </Button>
+        <Col md={12}>
+          <div className="btn-next">
+            <Button className="btn btn-primary nxt-btn" id="button-send" color="primary" onClick={this.handleNext}>
+              {component.butttonTitle}
+            </Button>
+          </div>
+        </Col>
       </div>
     );
   }
