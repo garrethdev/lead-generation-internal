@@ -9,7 +9,7 @@
     "test:server": "NODE_ENV=test mocha --timeout 5000 --ui bdd --reporter spec --colors src/server --recursive --exit",
     "start": "npm run build && node src/server/index.js",
     "client": "webpack-dev-server --mode development --devtool inline-source-map --hot",
-    "server": "nodemon --inspect src/server/index.js",
+    "server": "nodemon src/server/index.js",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {

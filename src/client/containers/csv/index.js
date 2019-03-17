@@ -41,22 +41,26 @@ class CSVUpload extends React.Component {
   handleList = selectedListIndex => this.setState({ selectedListIndex });
 
   onDropFile = (files) => {
-    if (files.length > 1) {
-      alert('only one file is allowed');
-    } else if (files.length === 1) {
-      const fileReader = new FileReader();
-      fileReader.readAsText(files[0]);
-      fileReader.onloadend = (e) => {
-        const headers = e.target.result.split('\n')[0];
-        if (headers.includes('Email Address') && headers.includes('First Name') && headers.includes('Last Name') && headers.includes('Company')) {
-          this.setState({
-            csvContent: e.target.result, enableUpload: true, selectedFileName: files[0].name
-          });
-        } else {
-          alert('Invalid format of CSV, please check and try again.');
-        }
-      };
-    }
+    this.setState({
+      csvContent: null, enableUpload: false, selectedFileName: undefined, csvError: false
+    }, () => {
+      if (files.length > 1) {
+        this.setState({ csvError: 'only one file is allowed' });
+      } else if (files.length === 1) {
+        const fileReader = new FileReader();
+        fileReader.readAsText(files[0]);
+        fileReader.onloadend = (e) => {
+          const headers = e.target.result.split('\n')[0];
+          if (headers.includes('Email Address') && headers.includes('First Name') && headers.includes('Last Name') && headers.includes('Company')) {
+            this.setState({
+              csvContent: e.target.result, enableUpload: true, selectedFileName: files[0].name, csvError: false
+            });
+          } else {
+            this.setState({ csvError: 'Invalid format of CSV, please check and try again.' });
+          }
+        };
+      }
+    });
   };
 
   handleMenbersUpload = () => {
@@ -114,7 +118,7 @@ class CSVUpload extends React.Component {
 
   render() {
     const {
-      enableUpload, enableSend, selectedFileName, existingLists, selectedListIndex, showAlert
+      enableUpload, enableSend, selectedFileName, existingLists, selectedListIndex, showAlert, csvError
     } = this.state;
     const { component } = this.props;
     return (
@@ -140,18 +144,24 @@ class CSVUpload extends React.Component {
                 </Input>
                 <div>
                   <Dropzone
+                    id="csv-input"
                     accept=".csv,text/csv"
+                    multiple={false}
                     onDrop={this.onDropFile}
-                    onDropRejected={() => alert('Invalid format of CSV, please check and try again.')}
+                    isDragActive
                   >
-                    {({ getRootProps }) => (
+                    {({ getRootProps, getInputProps, isDragActive }) => (
                       <div className="dropzone" {...getRootProps()}>
+                        <input {...getInputProps()} />
                         <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
                       </div>
                     )}
                   </Dropzone>
                   {
                     enableUpload && <Label className="note">Note: Click on upload to add contacts.</Label>
+                  }
+                  {
+                    csvError && <Label className="error">{csvError}</Label>
                   }
                 </div>
                 <br />
@@ -193,7 +203,7 @@ class CSVUpload extends React.Component {
                 </Tooltip>
               )
             }
-            {component.butttonTitle}
+            {component ? component.butttonTitle : ''}
           </Button>
         </div>
         <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>

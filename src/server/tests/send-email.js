@@ -5,7 +5,7 @@ const server = require('../index');
 /* eslint prefer-destructuring: 0 */
 const expect = chai.expect;
 chai.config.includeStack = true;
-const listId = 'a2781f9374';
+const listId = '534613e9ef';
 const htmlContent = '<p> <h2> This is testing template </h2> </p>';
 
 /**
@@ -18,7 +18,7 @@ describe('## Send email', () => {
     it('should successfully send batch requests to mailchimp', (done) => {
       request(server)
         .post('/api/mailchimp/batches')
-        .send({ operations: [{ method: 'POST', path: `lists/${listId}/members`, body: '{"email_address":"freddie@mailchimp.com", "status":"subscribed"}' }] })
+        .send({ operations: [{ method: 'POST', path: `lists/${listId}/members`, body: '{"email_address":"phpatel.4518@gmail.com","status":"subscribed","merge_fields":{"FNAME":"Pooja","LNAME":"Patel","COMPANY":"ABC Pvt. Ltd."}}' }] })
         .then((res) => {
           expect(res.status).to.equal(200);
           expect(res.ok).to.equal(true);
@@ -65,7 +65,7 @@ describe('## Send email', () => {
     });
   });
 
-  describe(`# POST /api/mailchimp/campaigns/${campaignId}/actions/schedule`, () => {
+  describe(`# POST /api/mailchimp/campaigns/${campaignId}/actions/send`, () => {
     it('should successfully send campaigns on scheduled time', (done) => {
       request(server)
         .post(`/api/mailchimp/campaigns/${campaignId}/actions/send`)

@@ -87,7 +87,7 @@ class NewCampaign extends React.Component {
           .then(() => {
             scheduleCampaign(id, scheduleDate)
               .then(() => {
-                this.setState({ enableSend: true, showAlert: 'Successfully Scheduled!!!' }, () => {
+                this.setState({ currentComponentIndex: 0, enableSend: true, showAlert: 'Successfully Scheduled!!!' }, () => {
                   setTimeout(() => this.setState({ showAlert: false }), 3000);
                 });
                 this.showLoader(false);

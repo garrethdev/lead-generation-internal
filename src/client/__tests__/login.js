@@ -1,15 +1,17 @@
 import React from 'react';
-import { mount, shallow } from 'enzyme';
+import { mount } from 'enzyme';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 
-import Login from './index';
+import Login from '../containers/login';
 
-const initialState = { output:100 };
+const initialState = { output: 100 };
 
 describe('>>>>> Login --- Shallow render react component', () => {
   const mockStore = configureStore();
-  let store, wrapper, login;
+  let store;
+  let wrapper;
+  let login;
 
   beforeEach(() => {
     store = mockStore(initialState);
@@ -32,9 +34,8 @@ describe('>>>>> Login --- Shallow render react component', () => {
   });
 
   it('on submit clicked', () => {
-    const submitButton = login.find('#submit-button')
+    const submitButton = login.find('#submit-button');
     expect(submitButton).toHaveLength(2);
     submitButton.at(0).simulate('click');
   });
-
 });
