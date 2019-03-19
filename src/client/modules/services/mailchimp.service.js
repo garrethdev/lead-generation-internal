@@ -39,12 +39,6 @@ export function getLists() {
     .catch(error => Promise.reject(error));
 }
 
-export function getListDetails(id) {
-  return axios.get(`/api/mailchimp/lists/${id}`)
-    .then(({ data }) => Promise.resolve(data))
-    .catch(error => Promise.reject(error));
-}
-
 export default {
-  batchSubmit, addMailChimpCampaign, updateCampaignContent, sendCampaign, scheduleCampaign, getLists, getListDetails
+  batchSubmit, addMailChimpCampaign, updateCampaignContent, sendCampaign, scheduleCampaign, getLists
 };

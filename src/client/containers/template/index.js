@@ -1,35 +1,34 @@
 import React from 'react';
 import { Button, Col } from 'reactstrap';
 import EmailEditor from 'react-email-editor';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { updateNewCampaign } from '../../modules/mailChimp';
 
-export default class Template extends React.Component {
+class Template extends React.Component {
   constructor(props) {
     super(props);
     this.editor = null;
   }
 
   componentDidMount() {
-    const { campaignDetails: { htmlDesign } } = this.props;
+    const { campaignDetails: { template: { htmlDesign } } } = this.props;
     if (htmlDesign) {
       this.editor.loadDesign(htmlDesign);
     }
   }
 
   handleNext = () => {
-    const { component, handleNext } = this.props;
+    const { handleNext, updateNewCampaign } = this.props;
     this.editor.exportHtml((data) => {
-      const { html, design } = data;
+      const { html, design: htmlDesign } = data;
+      updateNewCampaign({ template: { html, htmlDesign } });
       this.editor = null;
-      handleNext && handleNext(component.title, { html, htmlDesign: design });
+      handleNext();
     });
   };
 
-  componentWillUnmount() {
-    this.editor = null;
-  }
-
   render() {
-    const { component } = this.props;
     return (
       <div className="container">
         <br />
@@ -42,7 +41,7 @@ export default class Template extends React.Component {
         <Col md={12}>
           <div className="btn-next">
             <Button className="btn btn-primary nxt-btn" id="button-send" color="primary" onClick={this.handleNext}>
-              {component.butttonTitle}
+              {'Next'}
             </Button>
           </div>
         </Col>
@@ -50,3 +49,16 @@ export default class Template extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  campaignDetails: state.mailchimp && state.mailchimp.campaignDetails,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  updateNewCampaign
+}, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Template);

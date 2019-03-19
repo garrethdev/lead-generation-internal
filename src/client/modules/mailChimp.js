@@ -1,13 +1,17 @@
-import { push } from 'react-router-redux';
-import _ from 'lodash';
 import mailchimpService from './services/mailchimp.service';
 
 export const SAVE_CAMPAIGN_CONTENT = 'mailchimp/SAVE_CAMPAIGN_CONTENT';
-export const GET_LIST_DETAILS = 'mailchimp/GET_LIST_DETAILS';
 
 const initialState = {
-  htmlContent: null,
-  listDetails: {}
+  campaignDetails: {
+    listDetails: undefined,
+    template: {
+      html: undefined,
+      htmlDesign: undefined,
+    },
+    scheduleDate: undefined,
+    subjectLine: undefined,
+  }
 };
 
 export default (state = initialState, action) => {
@@ -15,13 +19,10 @@ export default (state = initialState, action) => {
     case SAVE_CAMPAIGN_CONTENT:
       return {
         ...state,
-        htmlContent: action.payload
-      };
-
-    case GET_LIST_DETAILS:
-      return {
-        ...state,
-        listDetails: action.payload
+        campaignDetails: {
+          ...state.campaignDetails,
+          ...action.payload
+        }
       };
 
     default:
@@ -31,23 +32,33 @@ export default (state = initialState, action) => {
 
 export const getLists = () => dispatch => mailchimpService.getLists();
 export const addMembers = members => dispatch => mailchimpService.batchSubmit(members);
-export const addMailChimpCampaign = body => dispatch => mailchimpService.addMailChimpCampaign(body);
-export const updateCampaignContent = (id, body) => dispatch => mailchimpService.updateCampaignContent(id, body);
-export const scheduleCampaign = (id, time) => dispatch => mailchimpService.scheduleCampaign(id, time);
-export const sendCampaign = id => dispatch => mailchimpService.sendCampaign(id);
-export const getListDetails = id => dispatch => mailchimpService.getListDetails(id)
-  .then(({ details = {} }) => {
-    const listDetails = _.pick(details, ['id', 'name', 'contact', 'stats.member_count']);
-    dispatch({
-      type: GET_LIST_DETAILS,
-      payload: listDetails
-    });
-    return listDetails;
-  });
-export const saveCampaignContent = content => (dispatch) => {
-  dispatch(push('/addCampaignDetails'));
-  dispatch({
-    type: SAVE_CAMPAIGN_CONTENT,
-    payload: content
-  });
+
+export const updateNewCampaign = payload => ({ type: SAVE_CAMPAIGN_CONTENT, payload });
+
+const addMailChimpCampaign = body => mailchimpService.addMailChimpCampaign(body);
+const updateCampaignContent = (id, body) => mailchimpService.updateCampaignContent(id, body);
+const scheduleCampaign = (id, time) => mailchimpService.scheduleCampaign(id, time);
+
+export const sendCampaign = () => (dispatch, getState) => {
+  debugger;
+  const {
+    campaignDetails: {
+      listDetails, template: { html }, scheduleDate, subjectLine
+    }
+  } = getState().mailchimp;
+  // create campaign, update, send
+  const body = {
+    recipients: { list_id: listDetails.id },
+    type: 'regular',
+    settings: {
+      subject_line: subjectLine || listDetails.campaign_defaults.subject || 'Hello There,',
+      reply_to: listDetails.campaign_defaults.from_email,
+      from_name: listDetails.campaign_defaults.from_name
+    }
+  };
+  return addMailChimpCampaign(body)
+    .then(({ id }) => updateCampaignContent(id, { html })
+      .then(() => scheduleCampaign(id, scheduleDate)
+        .then(() => Promise.resolve('Scheduled Successfully!!!'))))
+    .catch(error => Promise.reject({ error, errorMessage: 'Error scheduling campaign, Please try again.' }));
 };

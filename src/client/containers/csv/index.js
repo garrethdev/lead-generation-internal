@@ -8,7 +8,7 @@ import csv from 'csvtojson';
 import FileDrop from 'react-file-drop';
 import _ from 'lodash';
 import '../../../../node_modules/react-datetime/css/react-datetime.css';
-import { addMembers, getLists } from '../../modules/mailChimp';
+import { addMembers, getLists, updateNewCampaign } from '../../modules/mailChimp';
 
 import './csv.css';
 
@@ -30,14 +30,14 @@ class CSVUpload extends React.Component {
     getLists()
       .then(({ lists = [] }) => {
         if (lists.length > 0) {
-          this.setState({ existingLists: _.map(lists, l => _.pick(l, ['id', 'name', 'campaign_defaults'])), selectedListIndex: 0 });
+          this.setState({ existingLists: _.map(lists, l => _.pick(l, ['id', 'name', 'campaign_defaults'])), selectedListIndex: 0 }, this.updateCampaign);
         }
       })
       .catch(error => console.log('Error retriving lists', error))
       .finally(() => showLoader(false));
   }
 
-  handleList = selectedListIndex => this.setState({ selectedListIndex });
+  handleList = selectedListIndex => this.setState({ selectedListIndex }, this.updateCampaign)
 
   onDropFile = (files) => {
     if (files[0].type !== 'text/csv') {
@@ -118,11 +118,21 @@ class CSVUpload extends React.Component {
     }
   };
 
+  updateCampaign = () => {
+    const { existingLists, selectedListIndex } = this.state;
+    const { updateNewCampaign } = this.props;
+    updateNewCampaign({ listDetails: existingLists[selectedListIndex] });
+  };
+
   handleNext = () => {
-    const { enableUpload, existingLists, selectedListIndex } = this.state;
-    const { component, handleNext } = this.props;
+    const { enableUpload, selectedListIndex } = this.state;
+    const { handleNext } = this.props;
     if (selectedListIndex === null) return;
-    const cb = () => handleNext(component.title, existingLists[selectedListIndex]);
+    const cb = () => {
+      this.updateCampaign();
+      handleNext();
+    };
+
     if (enableUpload) {
       this.handleMenbersUpload(cb);
     } else {
@@ -134,7 +144,6 @@ class CSVUpload extends React.Component {
     const {
       enableUpload, selectedFileName, existingLists, selectedListIndex, showAlert, csvError
     } = this.state;
-    const { component } = this.props;
     return (
       <div>
         <div className="component-wrapper">
@@ -194,7 +203,7 @@ class CSVUpload extends React.Component {
         </div>
         <div className="btn-next">
           <Button className="btn btn-primary" color="primary" onClick={this.handleNext}>
-            {component ? component.butttonTitle : ''}
+            {'Next'}
           </Button>
         </div>
         <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
@@ -207,11 +216,13 @@ class CSVUpload extends React.Component {
 
 const mapStateToProps = state => ({
   lists: state.mailchimp && state.mailchimp.lists,
+  campaignDetails: state.mailchimp && state.mailchimp.campaignDetails,
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   getLists,
-  addMembers
+  addMembers,
+  updateNewCampaign
 }, dispatch);
 
 export default connect(

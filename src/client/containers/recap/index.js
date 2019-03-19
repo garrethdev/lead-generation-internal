@@ -2,59 +2,73 @@ import React from 'react';
 import renderHTML from 'react-render-html';
 import DateTime from 'react-datetime';
 import { Alert, Button } from 'reactstrap';
+import { connect } from 'react-redux';
 import moment from 'moment';
+import { bindActionCreators } from 'redux';
+import { sendCampaign } from '../../modules/mailChimp';
 
 import './recap.css';
 
-const minuteInterval = 15;
-const roundedUp = Math.ceil(moment().minute() / minuteInterval) * minuteInterval;
-
-export default class Recap extends React.Component {
+class Recap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      scheduleDate: moment().minute(roundedUp),
       showAlert: false
     };
   }
 
   handleNext = () => {
-    const { component, handleNext, campaignDetails } = this.props;
+    const { campaignDetails, sendCampaign, showLoader } = this.props;
     const {
-      listDetails, html, scheduleDate, subjectLine
+      listDetails, template: { html }, scheduleDate, subjectLine
     } = campaignDetails;
     if (listDetails && html && scheduleDate && subjectLine) {
       this.setState({ showErrors: false }, () => {
-        handleNext && handleNext(component.title);
+        // send Campaign
+        showLoader(true);
+        sendCampaign()
+          .then(() => {
+            showLoader(false);
+            this.setState({ showAlert: 'Scheduled Successfully!!!', showErrors: true }, () => {
+              setTimeout(() => this.setState({ showAlert: false }), 3000);
+            });
+          })
+          .catch((error) => {
+            showLoader(false);
+            this.setState({ showAlert: error.errorMessage, showErrors: true }, () => {
+              setTimeout(() => this.setState({ showAlert: false }), 3000);
+            });
+          });
+        // handleNext(true);
       });
     } else {
-      this.setState({ showAlert: 'Add all the details first', showErrors: true });
+      this.setState({ showAlert: 'Add all the details first', showErrors: true }, () => {
+        setTimeout(() => this.setState({ showAlert: false }), 3000);
+      });
     }
   };
 
-  editTemplate = () => {
-    const { editTemplate } = this.props;
-    editTemplate();
-  };
-
   render() {
+    const roundedUp = Math.ceil(moment().minute() / 15) * 15;
+    const defaultDate = moment().minute(roundedUp);
+
     const { showAlert } = this.state;
-    const { campaignDetails, component } = this.props;
+    const { campaignDetails, editComponent } = this.props;
     const {
-      listDetails, html = '', scheduleDate = moment.now(), subjectLine = ''
+      listDetails, template: { html }, scheduleDate = defaultDate, subjectLine
     } = campaignDetails;
     const { name = '' } = listDetails || {};
     return (
       <div className="container">
-        <label>Subject</label>
+        Subject
         <div className="name">
           <label>{subjectLine}</label>
         </div>
-        <label>Template</label>
-        <div className="template-wrapper" onClick={this.editTemplate}>
-          {renderHTML(html)}
+        Template
+        <div onClick={() => editComponent(1)} className="template-wrapper">
+          {html && renderHTML(html)}
         </div>
-        <label>Date</label>
+        Date
         <DateTime
           value={scheduleDate}
           inputProps={{ readOnly: true, disabled: true }}
@@ -64,7 +78,7 @@ export default class Recap extends React.Component {
           closeOnSelect
           closeOnTab
         />
-        <label>Time</label>
+        Time
         <DateTime
           value={scheduleDate}
           inputProps={{ readOnly: true, disabled: true }}
@@ -73,20 +87,33 @@ export default class Recap extends React.Component {
           closeOnSelect
           closeOnTab
         />
-        <label>List</label>
+        List
         <div className="name">
           <label>{name}</label>
         </div>
         <br />
         <div className="btn-next">
           <Button className="btn btn-primary" color="primary" id="button-add-campaign" onClick={this.handleNext}>
-            {component.butttonTitle}
+            {'Schedule'}
           </Button>
         </div>
-        <Alert className="success-alert" color="danger" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
+        <Alert className="success-alert" color={(showAlert === 'Scheduled Successfully!!!') ? 'success' : 'danger'} isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
           {showAlert}
         </Alert>
       </div>
     );
   }
 }
+
+const mapStateToProps = state => ({
+  campaignDetails: state.mailchimp && state.mailchimp.campaignDetails,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  sendCampaign
+}, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Recap);

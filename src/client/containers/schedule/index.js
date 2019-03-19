@@ -5,39 +5,44 @@ import {
 import DateTime from 'react-datetime';
 import moment from 'moment';
 import Calendar from 'react-calendar';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { updateNewCampaign } from '../../modules/mailChimp';
+
 import './schedule.css';
 
 const minuteInterval = 15;
-const roundedUp = Math.ceil(moment().minute() / minuteInterval) * minuteInterval;
 
-export default class Schedule extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      subjectLine: props.campaignDetails ? props.campaignDetails.subjectLine : '',
-      scheduleDate: props.campaignDetails ? moment(props.campaignDetails.scheduleDate).minute(roundedUp) : moment().minute(roundedUp),
-      uploadingData: false
-    };
+class Schedule extends React.Component {
+  state = { subjectLine: '' };
+
+  componentDidMount() {
+    const { campaignDetails: { scheduleDate }, updateNewCampaign } = this.props;
+    const date = scheduleDate || moment();
+    const roundedUp = Math.ceil(moment(date).minute() / minuteInterval) * minuteInterval;
+    updateNewCampaign({ scheduleDate: moment(date).minute(roundedUp) });
   }
 
-  handleChange = (e) => {
+  handleSubjectChange = (e) => {
     e.stopPropagation();
     e.preventDefault();
     const { name, value } = e.target;
-    this.setState({ [name]: value, errorMessage: '' });
+    this.setState({ [name]: value });
   };
 
   handleBlurEvent = (e) => {
     e.stopPropagation();
     e.preventDefault();
 
-    const { value } = e.target;
-    if (!value) {
-      this.setState({ errorMessage: 'Please add subject.' });
-    }
+    const { subjectLine } = this.state;
+    const { updateNewCampaign } = this.props;
+    updateNewCampaign({ subjectLine });
   };
 
-  handleScheduleDate = date => this.setState({ scheduleDate: date });
+  handleScheduleDate = (date) => {
+    const { updateNewCampaign } = this.props;
+    updateNewCampaign({ scheduleDate: date });
+  };
 
   getValidDates = (current) => {
     const yesterday = moment().subtract(1, 'day');
@@ -62,19 +67,14 @@ export default class Schedule extends React.Component {
   handleNext = (e) => {
     e.stopPropagation();
     e.preventDefault();
-
-    const { scheduleDate, subjectLine } = this.state;
-    const { component, handleNext } = this.props;
-    if (!subjectLine) {
-      this.setState({ errorMessage: 'Please add subject.' });
-      return;
-    }
-    handleNext && handleNext(component.title, { scheduleDate, subjectLine });
+    const { handleNext } = this.props;
+    handleNext();
   };
 
   render() {
-    const { scheduleDate, subjectLine } = this.state;
-    const { component } = this.props;
+    const roundedUp = Math.ceil(moment().minute() / minuteInterval) * minuteInterval;
+    const defaultDate = moment().minute(roundedUp);
+    const { campaignDetails: { scheduleDate = defaultDate, subjectLine } } = this.props;
     return (
       <div className="container">
         <Form onSubmit={this.handleNext}>
@@ -82,12 +82,14 @@ export default class Schedule extends React.Component {
             <Col md={7}>
               <div>
                 <label>Subject</label>
-                <Input type="text" name="subjectLine" id="subjectLine" placeholder="Add the subject for your campaign" value={subjectLine} onBlur={this.handleBlurEvent} onChange={this.handleChange} required />
+                <Input type="text" name="subjectLine" id="subjectLine" placeholder="Add the subject for your campaign" defaultValue={subjectLine} onBlur={this.handleBlurEvent} onChange={this.handleSubjectChange} required />
               </div>
               <div>
                 <label>Calendar</label>
                 <Calendar
-                  onChange={value => this.setState({ scheduleDate: moment(this.state.scheduleDate).year(value.getFullYear()).month(value.getMonth()).date(value.getDate()) })}
+                  onChange={(value) => {
+                    this.handleScheduleDate(moment(scheduleDate).year(value.getFullYear()).month(value.getMonth()).date(value.getDate()));
+                  }}
                   value={moment(scheduleDate).toDate()}
                   minDate={new Date()}
                 />
@@ -123,7 +125,7 @@ export default class Schedule extends React.Component {
           </FormGroup>
           <div className="btn-next">
             <Button type="submit" className="btn btn-primary" color="primary" id="button-add-campaign">
-              {component.butttonTitle}
+              {'Next'}
             </Button>
           </div>
         </Form>
@@ -131,3 +133,16 @@ export default class Schedule extends React.Component {
     );
   }
 }
+
+const mapStateToProps = state => ({
+  campaignDetails: state.mailchimp && state.mailchimp.campaignDetails,
+});
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  updateNewCampaign
+}, dispatch);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Schedule);
