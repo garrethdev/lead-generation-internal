@@ -159,7 +159,7 @@ class CSVUpload extends React.Component {
                 <div>
                   <div>
                     <label htmlFor="file-input-drop" className="dropzone">
-                      <FileDrop accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">
+                      <FileDrop ref={(ref) => { this.dropRedf = ref; }} accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">
                         <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
                       </FileDrop>
                       <input type="file" accept=".csv,text/csv" multiple={false} id="file-input-drop" style={{ display: 'none' }} onChange={e => this.onDropFile(e.target.files)} />

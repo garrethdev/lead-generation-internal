@@ -24,6 +24,10 @@ export default class Template extends React.Component {
     });
   };
 
+  componentWillUnmount() {
+    this.editor = null;
+  }
+
   render() {
     const { component } = this.props;
     return (

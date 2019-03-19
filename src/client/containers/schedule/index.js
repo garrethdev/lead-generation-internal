@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button, Col, Input, Row
+  Button, Col, Form, FormGroup, Input
 } from 'reactstrap';
 import DateTime from 'react-datetime';
 import moment from 'moment';
@@ -28,6 +28,9 @@ export default class Schedule extends React.Component {
   };
 
   handleBlurEvent = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     const { value } = e.target;
     if (!value) {
       this.setState({ errorMessage: 'Please add subject.' });
@@ -56,7 +59,10 @@ export default class Schedule extends React.Component {
     };
   };
 
-  handleNext = () => {
+  handleNext = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     const { scheduleDate, subjectLine } = this.state;
     const { component, handleNext } = this.props;
     if (!subjectLine) {
@@ -67,59 +73,60 @@ export default class Schedule extends React.Component {
   };
 
   render() {
-    const { scheduleDate, subjectLine, errorMessage } = this.state;
+    const { scheduleDate, subjectLine } = this.state;
     const { component } = this.props;
     return (
       <div className="container">
-        <Row>
-          <Col md={7}>
-            <div>
-              <label>Subject</label>
-              <Input type="text" name="subjectLine" id="subjectLine" placeholder="Add the subject for your campaign" value={subjectLine} onBlur={this.handleBlurEvent} onChange={this.handleChange} required />
-            </div>
-            { errorMessage ? <span className="error">{errorMessage}</span> : '' }
-            <div>
-              <label>Calendar</label>
-              <Calendar
-                onChange={value => this.setState({ scheduleDate: moment(this.state.scheduleDate).year(value.getFullYear()).month(value.getMonth()).date(value.getDate()) })}
-                value={moment(scheduleDate).toDate()}
-                minDate={new Date()}
-              />
-            </div>
-            <div>
-              <label>Date</label>
-              <DateTime
-                value={scheduleDate}
-                inputProps={{ readOnly: true }}
-                isValidDate={this.getValidDates}
-                timeConstraints={this.getValidTimes(scheduleDate)}
-                onChange={this.handleScheduleDate}
-                dateFormat="MMMM DD, YYYY"
-                timeFormat={false}
-                closeOnSelect
-                closeOnTab
-              />
-            </div>
-            <div>
-              <label>Time</label>
-              <DateTime
-                value={scheduleDate}
-                inputProps={{ readOnly: true }}
-                isValidDate={this.getValidDates}
-                timeConstraints={this.getValidTimes(scheduleDate)}
-                onChange={this.handleScheduleDate}
-                dateFormat={false}
-                closeOnSelect
-                closeOnTab
-              />
-            </div>
-          </Col>
-        </Row>
-        <div className="btn-next">
-          <Button className="btn btn-primary" color="primary" id="button-add-campaign" onClick={this.handleNext}>
-            {component.butttonTitle}
-          </Button>
-        </div>
+        <Form onSubmit={this.handleNext}>
+          <FormGroup row>
+            <Col md={7}>
+              <div>
+                <label>Subject</label>
+                <Input type="text" name="subjectLine" id="subjectLine" placeholder="Add the subject for your campaign" value={subjectLine} onBlur={this.handleBlurEvent} onChange={this.handleChange} required />
+              </div>
+              <div>
+                <label>Calendar</label>
+                <Calendar
+                  onChange={value => this.setState({ scheduleDate: moment(this.state.scheduleDate).year(value.getFullYear()).month(value.getMonth()).date(value.getDate()) })}
+                  value={moment(scheduleDate).toDate()}
+                  minDate={new Date()}
+                />
+              </div>
+              <div>
+                <label>Date</label>
+                <DateTime
+                  value={scheduleDate}
+                  inputProps={{ readOnly: true }}
+                  isValidDate={this.getValidDates}
+                  timeConstraints={this.getValidTimes(scheduleDate)}
+                  onChange={this.handleScheduleDate}
+                  dateFormat="MMMM DD, YYYY"
+                  timeFormat={false}
+                  closeOnSelect
+                  closeOnTab
+                />
+              </div>
+              <div>
+                <label>Time</label>
+                <DateTime
+                  value={scheduleDate}
+                  inputProps={{ readOnly: true }}
+                  isValidDate={this.getValidDates}
+                  timeConstraints={this.getValidTimes(scheduleDate)}
+                  onChange={this.handleScheduleDate}
+                  dateFormat={false}
+                  closeOnSelect
+                  closeOnTab
+                />
+              </div>
+            </Col>
+          </FormGroup>
+          <div className="btn-next">
+            <Button type="submit" className="btn btn-primary" color="primary" id="button-add-campaign">
+              {component.butttonTitle}
+            </Button>
+          </div>
+        </Form>
       </div>
     );
   }

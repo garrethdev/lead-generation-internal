@@ -20,13 +20,11 @@ class NavigationBar extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({ user: state.auth && state.auth.user });
-
 const mapDispatchToProps = dispatch => bindActionCreators({
   logOutUser
 }, dispatch);
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(NavigationBar);

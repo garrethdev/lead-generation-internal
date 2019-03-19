@@ -11,6 +11,7 @@ import ContactList from '../csv';
 import Template from '../template';
 import Schedule from '../schedule';
 import Recap from '../recap';
+import NavigationBar from '../navigationBar';
 
 import SpinnerLoader from '../../components/spinnerLoader';
 
@@ -158,6 +159,7 @@ class NewCampaign extends React.Component {
     const currentComponent = componentDetails[currentComponentIndex];
     return (
       <div className="main-wrapper">
+        <NavigationBar />
         <label onClick={() => console.log('Ongoing Campaign')}>{`New Campaign ~ ${currentComponent.title}`}</label>
         <nav className="form-steps">
           {
