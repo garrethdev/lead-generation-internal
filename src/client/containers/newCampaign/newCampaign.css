@@ -1,55 +1,154 @@
-.hide-previous {
-    display: none;
+.form-steps {
+    display: block;
+    width: 70%;
+    position: relative;
+    margin: 50px auto;
 }
-.tabs {
+
+.form-steps:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.form-steps__item {
+    padding: 0;
+    position: relative;
+    display: block;
+    float: left;
+    width: 25%;
+    text-align: center;
+}
+
+.form-steps__item-content {
+    display: inline-block;
+}
+
+.form-steps__item-icon {
+    background: white;
+    color: #f1f1f1;
+    /*display: block;*/
+    border-radius: 100%;
+    text-align: center;
+    width: 50px;
+    height: 50px;
+    /*line-height: 40px;*/
+    display: flex;
     align-items: center;
     justify-content: center;
-    align-self: center;
-    justify-self: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin: 0 auto 10px auto;
+    position: relative;
+    font-size: 12px;
+    font-weight: 700;
+    z-index: 2;
+    border: 5px solid;
 }
 
-.tab ul {
-    padding-left: 0;
-    display: flex;
-}
-.tab ul li {
-    list-style-type: none;
-    margin-right: 55px;
-    cursor: pointer;
-}
-.tab ul li span{
-    width: 20px;
-    height: 20px;
-    background: #fff;
-    border-radius: 50%;
-    border: 1px solid #333;
-    padding: 2px 10px;
-    position: relative;
-
-}
-.tab ul li span.active{
-    width: 20px;
-    height: 20px;
-    background: #333;
-    border-radius: 50%;
-    border: 1px solid #333;
-    position: relative;
-}
-.tab ul li span:before {
+.form-steps__item-icon:after {
     content: '';
-    background: #000;
-    height: 1px;
     position: absolute;
-    top: 12px;
-    z-index: 999;
-    width: 80px;
-    left: 12px;
-    cursor: pointer;
+    width: 5px;
+    height: 6px;
+    background: white;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
 }
-.tab ul li span.last:before {
+
+.form-steps__item-icon:before {
     content: '';
-    background: transparent;
+    position: absolute;
+    width: 5px;
+    height: 6px;
+    background: white;
+    left: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.form-steps__item:first-child .form-steps__item-icon:before,
+.form-steps__item:last-child .form-steps__item-icon:after {
+    display: none;
+}
+
+.form-steps__item.form-steps__item--completed .form-steps__item-icon:after,
+.form-steps__item.form-steps__item--completed .form-steps__item-icon:before,
+.form-steps__item-content.form-steps__item--active .form-steps__item-icon:before {
+    background: #d1d1d1;
+}
+
+.form-steps__item-text {
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.form-steps__item-line {
+    display: inline-block;
+    height: 16px;
+    width: 100%;
+    background: white;
+    float: left;
+    position: absolute;
+    left: -50%;
+    top: 17px;
+    z-index: 1;
+    border-top: 5px solid #f1f1f1;
+    border-bottom: 5px solid #f1f1f1;
+}
+
+.form-steps__item--active .form-steps__item-icon {
+    background: #d1d1d1;
+    color: white;
+    border-color: #f1f1f1;
+}
+
+.form-steps__item--active .form-steps__item-text {
+    font-weight: 600;
+}
+
+.form-steps__item--active .form-steps__item-line,
+.form-steps__item--completed .form-steps__item-line {
+    background: #d1d1d1;
+    /*border: 5px solid #f1f1f1;*/
+}
+
+.form-steps__item--completed .form-steps__item-text {
+    color: #f1f1f1;
+}
+
+.form-steps__item--completed .form-steps__item-icon {
+    background: #d1d1d1;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyBkYXRhLW5hbWU9IkxheWVyIDEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDkuMTIgNyI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTkuMTIgMS4wNkw4LjA2IDAgMy4xOCA0Ljg4IDEuMDYgMi43NiAwIDMuODIgMy4xOCA3bDUuOTQtNS45NHoiLz48L3N2Zz4=);
+    color: transparent;
+    background-size: 15px;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f1f1f1;
+}
+
+@media only screen and (max-width: 767px) {
+
+    .form-steps__item-icon,
+    .form-steps__item--completed .form-steps__item-icon {
+        width: 40px;
+        height: 40px;
+        /*line-height: 23px;*/
+        background-size: 10px;
+        font-size: 7px;
+        border-width: 3px;
+    }
+
+    .form-steps__item-line {
+        top: 15px;
+        height: 10px;
+        border-width: 3px;
+    }
+
+    .form-steps__item-icon:after,
+    .form-steps__item-icon:before {
+        height: 4px;
+    }
 
 }

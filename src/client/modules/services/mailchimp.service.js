@@ -26,6 +26,7 @@ export function sendCampaign(id) {
 }
 
 export function scheduleCampaign(id, time) {
+  if (moment().isAfter(time)) return sendCampaign(id);
   const sendOn = moment.utc(time).format();
   return axios.post(`/api/mailchimp/campaigns/${id}/actions/schedule`, { schedule_time: sendOn })
     .then(({ data }) => Promise.resolve(data))

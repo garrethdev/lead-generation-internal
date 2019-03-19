@@ -1,3 +1,4 @@
+import { push } from 'react-router-redux';
 import authService from './services/auth.service';
 import storage from '../helpers/storage';
 
@@ -42,6 +43,7 @@ export const logInUser = credentials => dispatch => authService.loginUser(creden
   });
 
 export const logOutUser = () => (dispatch) => {
+  dispatch(push('/login'));
   dispatch({
     type: USER_LOGOUT
   });

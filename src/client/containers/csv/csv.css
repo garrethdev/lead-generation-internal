@@ -26,6 +26,11 @@
     padding: 10px;
     margin-top: 10px;
     border-radius: .25rem;
+    display: flex;
+}
+
+.drop-container {
+    flex: 1;
 }
 
 .selected-list-item {

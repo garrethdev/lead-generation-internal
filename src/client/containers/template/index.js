@@ -3,6 +3,11 @@ import { Button, Col } from 'reactstrap';
 import EmailEditor from 'react-email-editor';
 
 export default class Template extends React.Component {
+  constructor(props) {
+    super(props);
+    this.editor = null;
+  }
+
   componentDidMount() {
     const { campaignDetails: { htmlDesign } } = this.props;
     if (htmlDesign) {
@@ -14,6 +19,7 @@ export default class Template extends React.Component {
     const { component, handleNext } = this.props;
     this.editor.exportHtml((data) => {
       const { html, design } = data;
+      this.editor = null;
       handleNext && handleNext(component.title, { html, htmlDesign: design });
     });
   };

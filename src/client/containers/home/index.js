@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { push } from 'react-router-redux';
 
+import NavigationBar from '../navigationBar';
 import './home.css';
 
 class Home extends React.Component {
@@ -10,11 +11,14 @@ class Home extends React.Component {
     const { goToNewCampaign } = this.props;
 
     return (
-      <div className="container">
-        <div className="label-wrapper">
-          <label className="links" onClick={goToNewCampaign}>New Campaign</label>
-          <br />
-          <label className="links" onClick={() => console.log('Ongoing Campaign')}>Ongoing Campaign</label>
+      <div>
+        <NavigationBar />
+        <div className="container">
+          <div className="label-wrapper">
+            <label className="links" onClick={goToNewCampaign}>New Campaign</label>
+            <br />
+            <label className="links" onClick={() => console.log('Ongoing Campaign')}>Ongoing Campaign</label>
+          </div>
         </div>
       </div>
     );

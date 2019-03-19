@@ -1,7 +1,7 @@
 import React from 'react';
 import renderHTML from 'react-render-html';
 import DateTime from 'react-datetime';
-import { Button } from 'reactstrap';
+import { Alert, Button } from 'reactstrap';
 import moment from 'moment';
 
 import './recap.css';
@@ -14,32 +14,22 @@ export default class Recap extends React.Component {
     super(props);
     this.state = {
       scheduleDate: moment().minute(roundedUp),
+      showAlert: false
     };
   }
 
   handleNext = () => {
-    const { component, handleNext } = this.props;
-    handleNext && handleNext(component.title);
-  };
-
-  getValidDates = (current) => {
-    const yesterday = moment().subtract(1, 'day');
-    return current.isAfter(yesterday);
-  };
-
-  getValidTimes = (dateTime) => {
-    // date is today, so only allow future times
-    if (moment().isSame(dateTime, 'day')) {
-      return {
-        hours: { min: dateTime.hours(), max: 23, step: 1 },
-        minutes: { min: 0, max: 59, step: minuteInterval },
-      };
+    const { component, handleNext, campaignDetails } = this.props;
+    const {
+      listDetails, html, scheduleDate, subjectLine
+    } = campaignDetails;
+    if (listDetails && html && scheduleDate && subjectLine) {
+      this.setState({ showErrors: false }, () => {
+        handleNext && handleNext(component.title);
+      });
+    } else {
+      this.setState({ showAlert: 'Add all the details first', showErrors: true });
     }
-    // date is in the future, so allow all times
-    return {
-      hours: { min: 0, max: 23, step: 1 },
-      minutes: { min: 0, max: 59, step: minuteInterval },
-    };
   };
 
   editTemplate = () => {
@@ -48,6 +38,7 @@ export default class Recap extends React.Component {
   };
 
   render() {
+    const { showAlert } = this.state;
     const { campaignDetails, component } = this.props;
     const {
       listDetails, html = '', scheduleDate = moment.now(), subjectLine = ''
@@ -67,10 +58,8 @@ export default class Recap extends React.Component {
         <DateTime
           value={scheduleDate}
           inputProps={{ readOnly: true, disabled: true }}
-          isValidDate={this.getValidDates}
-          timeConstraints={this.getValidTimes(scheduleDate)}
           onChange={this.handleScheduleDate}
-          dateFormat={'MMMM DD, YYYY'}
+          dateFormat="MMMM DD, YYYY"
           timeFormat={false}
           closeOnSelect
           closeOnTab
@@ -79,8 +68,6 @@ export default class Recap extends React.Component {
         <DateTime
           value={scheduleDate}
           inputProps={{ readOnly: true, disabled: true }}
-          isValidDate={this.getValidDates}
-          timeConstraints={this.getValidTimes(scheduleDate)}
           onChange={this.handleScheduleDate}
           dateFormat={false}
           closeOnSelect
@@ -96,6 +83,9 @@ export default class Recap extends React.Component {
             {component.butttonTitle}
           </Button>
         </div>
+        <Alert className="success-alert" color="danger" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
+          {showAlert}
+        </Alert>
       </div>
     );
   }

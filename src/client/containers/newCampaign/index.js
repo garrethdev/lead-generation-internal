@@ -42,6 +42,14 @@ const componentDetails = [
   },
 ];
 
+const initialCampaign = {
+  listDetails: undefined,
+  html: undefined,
+  htmlDesign: undefined,
+  scheduleDate: undefined,
+  subjectLine: undefined,
+};
+
 class NewCampaign extends React.Component {
   constructor(props) {
     super(props);
@@ -49,13 +57,7 @@ class NewCampaign extends React.Component {
       componentDetails,
       currentComponentIndex: 0,
       uploadingData: false,
-      campaignDetails: {
-        listDetails: undefined,
-        html: undefined,
-        htmlDesign: undefined,
-        scheduleDate: undefined,
-        subjectLine: undefined,
-      }
+      campaignDetails: initialCampaign
     };
   }
 
@@ -65,10 +67,10 @@ class NewCampaign extends React.Component {
       updateCampaignContent,
       scheduleCampaign,
     } = this.props;
+    const { campaignDetails } = this.state;
     const {
       listDetails, html, scheduleDate, subjectLine
-    } = this.state.campaignDetails;
-    debugger;
+    } = campaignDetails;
     // create campaign, update, send
     const body = {
       recipients: { list_id: listDetails.id },
@@ -87,7 +89,12 @@ class NewCampaign extends React.Component {
           .then(() => {
             scheduleCampaign(id, scheduleDate)
               .then(() => {
-                this.setState({ currentComponentIndex: 0, enableSend: true, showAlert: 'Successfully Scheduled!!!' }, () => {
+                this.setState({
+                  currentComponentIndex: 0,
+                  enableSend: true,
+                  showAlert: 'Successfully Scheduled!!!',
+                  campaignDetails: initialCampaign
+                }, () => {
                   setTimeout(() => this.setState({ showAlert: false }), 3000);
                 });
                 this.showLoader(false);
@@ -112,8 +119,8 @@ class NewCampaign extends React.Component {
   };
 
   handleNext = (componentTitle, value) => {
-    const { currentComponentIndex } = this.state;
-    const campaignDetails = { ...this.state.campaignDetails };
+    const { campaignDetails: details, currentComponentIndex } = this.state;
+    const campaignDetails = { ...details };
     switch (componentTitle) {
       case CONTACT_LIST:
         campaignDetails.listDetails = value;
@@ -152,24 +159,18 @@ class NewCampaign extends React.Component {
     return (
       <div className="main-wrapper">
         <label onClick={() => console.log('Ongoing Campaign')}>{`New Campaign ~ ${currentComponent.title}`}</label>
-        <div className="tab">
-          <ul className="tabs">
-            {
-              componentDetails.map((c, i) => {
-                if (i === currentComponentIndex && i === (componentDetails.length - 1)) {
-                  return <li key={i.toString()}><span className="active last" /></li>;
-                }
-                if (i === currentComponentIndex) {
-                  return <li key={i.toString()}><span className="active" /></li>;
-                }
-                if (i === (componentDetails.length - 1)) {
-                  return <li key={i.toString()}><span className="last" /></li>;
-                }
-                return <li key={i.toString()}><span /></li>;
-              })
-            }
-          </ul>
-        </div>
+        <nav className="form-steps">
+          {
+            componentDetails.map((c, i) => (
+              <div key={i.toString()} onClick={() => this.setState({ currentComponentIndex: i })} className={i < currentComponentIndex ? 'form-steps__item form-steps__item--completed' : 'form-steps__item'}>
+                <div className={i === currentComponentIndex ? 'form-steps__item-content form-steps__item--active' : ''}>
+                  <span className="form-steps__item-icon">{`Step${i + 1}`}</span>
+                  { i !== 0 && <span className="form-steps__item-line" />}
+                </div>
+              </div>
+            ))
+          }
+        </nav>
         <div className="component-wrapper">
           {React.createElement(currentComponent.component, {
             component: currentComponent,

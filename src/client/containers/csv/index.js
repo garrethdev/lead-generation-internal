@@ -2,10 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  Alert, Button, Col, FormGroup, Input, Label, Row, Tooltip
+  Alert, Button, Col, FormGroup, Input, Label, Row
 } from 'reactstrap';
 import csv from 'csvtojson';
-import Dropzone from 'react-dropzone';
+import FileDrop from 'react-file-drop';
 import _ from 'lodash';
 import '../../../../node_modules/react-datetime/css/react-datetime.css';
 import { addMembers, getLists } from '../../modules/mailChimp';
@@ -18,7 +18,6 @@ class CSVUpload extends React.Component {
     this.state = {
       csvContent: null,
       enableUpload: false,
-      enableSend: false,
       selectedFileName: undefined,
       existingLists: [],
       selectedListIndex: null
@@ -41,6 +40,12 @@ class CSVUpload extends React.Component {
   handleList = selectedListIndex => this.setState({ selectedListIndex });
 
   onDropFile = (files) => {
+    if (files[0].type !== 'text/csv') {
+      this.setState({
+        csvContent: null, enableUpload: false, selectedFileName: undefined, csvError: 'Invalid file type'
+      });
+      return;
+    }
     this.setState({
       csvContent: null, enableUpload: false, selectedFileName: undefined, csvError: false
     }, () => {
@@ -63,7 +68,7 @@ class CSVUpload extends React.Component {
     });
   };
 
-  handleMenbersUpload = () => {
+  handleMenbersUpload = (cb) => {
     const { csvContent, existingLists, selectedListIndex } = this.state;
     const { addMembers, showLoader } = this.props;
     if (!csvContent) return;
@@ -90,15 +95,20 @@ class CSVUpload extends React.Component {
           addMembers(members)
             .then(() => {
               // @TODO : enable send button
-              this.setState({ enableSend: true, showAlert: 'Uploaded Successfully!!!' }, () => {
-                setTimeout(() => this.setState({ showAlert: false }), 3000);
+              this.setState({ showAlert: 'Uploaded Successfully!!!' }, () => {
+                showLoader(false);
+                if (cb) {
+                  cb();
+                } else {
+                  setTimeout(() => this.setState({ enabledUpload: false, showAlert: false }), 3000);
+                }
               });
             })
             .catch((error) => {
+              showLoader(false);
               console.log('error uploading csv data', error);
               alert('error uploading csv data');
-            })
-            .finally(() => showLoader(false));
+            });
         })
         .catch((error) => {
           console.log('Error while reading csv file', error);
@@ -109,16 +119,20 @@ class CSVUpload extends React.Component {
   };
 
   handleNext = () => {
-    const { enableSend, existingLists, selectedListIndex } = this.state;
+    const { enableUpload, existingLists, selectedListIndex } = this.state;
     const { component, handleNext } = this.props;
     if (selectedListIndex === null) return;
-    if (!enableSend) return;
-    handleNext && handleNext(component.title, existingLists[selectedListIndex]);
+    const cb = () => handleNext(component.title, existingLists[selectedListIndex]);
+    if (enableUpload) {
+      this.handleMenbersUpload(cb);
+    } else {
+      cb();
+    }
   };
 
   render() {
     const {
-      enableUpload, enableSend, selectedFileName, existingLists, selectedListIndex, showAlert, csvError
+      enableUpload, selectedFileName, existingLists, selectedListIndex, showAlert, csvError
     } = this.state;
     const { component } = this.props;
     return (
@@ -143,20 +157,14 @@ class CSVUpload extends React.Component {
                   }
                 </Input>
                 <div>
-                  <Dropzone
-                    id="csv-input"
-                    accept=".csv,text/csv"
-                    multiple={false}
-                    onDrop={this.onDropFile}
-                    isDragActive
-                  >
-                    {({ getRootProps, getInputProps, isDragActive }) => (
-                      <div className="dropzone" {...getRootProps()}>
-                        <input {...getInputProps()} />
+                  <div>
+                    <label htmlFor="file-input-drop" className="dropzone">
+                      <FileDrop accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">
                         <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
-                      </div>
-                    )}
-                  </Dropzone>
+                      </FileDrop>
+                      <input type="file" accept=".csv,text/csv" multiple={false} id="file-input-drop" style={{ display: 'none' }} onChange={e => this.onDropFile(e.target.files)} />
+                    </label>
+                  </div>
                   {
                     enableUpload && <Label className="note">Note: Click on upload to add contacts.</Label>
                   }
@@ -175,34 +183,17 @@ class CSVUpload extends React.Component {
             </Col>
             <Col md={2}>
               <Button
-                id="Tooltip-1"
                 color="dark"
                 onClick={this.handleMenbersUpload}
                 className="upload-btn"
               >
-                {
-                  !enableUpload
-                  && (
-                    <Tooltip placement="top" isOpen={this.state.tooltipOpen1} target="Tooltip-1" toggle={() => this.setState({ tooltipOpen1: !this.state.tooltipOpen1 })}>
-                      Please add csv first!
-                    </Tooltip>
-                  )
-                }
                 Upload
               </Button>
             </Col>
           </Row>
         </div>
         <div className="btn-next">
-          <Button id="Tooltip-2" className="btn btn-primary" color="primary" onClick={this.handleNext}>
-            {
-              !(enableUpload && enableSend)
-              && (
-                <Tooltip placement="top" isOpen={this.state.tooltipOpen2} target="Tooltip-2" toggle={() => this.setState({ tooltipOpen2: !this.state.tooltipOpen2 })}>
-                  Please upload csv first!
-                </Tooltip>
-              )
-            }
+          <Button className="btn btn-primary" color="primary" onClick={this.handleNext}>
             {component ? component.butttonTitle : ''}
           </Button>
         </div>
