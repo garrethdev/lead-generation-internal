@@ -73,9 +73,9 @@ class NewCampaign extends React.Component {
         <nav className="form-steps">
           {
             componentDetails.map((c, i) => (
-              <div key={i.toString()} onClick={() => this.setState({ currentComponentIndex: i })} className={i < currentComponentIndex ? 'form-steps__item form-steps__item--completed' : 'form-steps__item'}>
+              <div key={i.toString()} className={i < currentComponentIndex ? 'form-steps__item form-steps__item--completed' : 'form-steps__item'}>
                 <div className={i === currentComponentIndex ? 'form-steps__item-content form-steps__item--active' : ''}>
-                  <span className="form-steps__item-icon">{`Step${i + 1}`}</span>
+                  <span onClick={() => this.setState({ currentComponentIndex: i })} className="form-steps__item-icon">{`Step${i + 1}`}</span>
                   { i !== 0 && <span className="form-steps__item-line" />}
                 </div>
               </div>

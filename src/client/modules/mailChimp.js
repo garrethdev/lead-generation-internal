@@ -59,6 +59,10 @@ export const sendCampaign = () => (dispatch, getState) => {
   return addMailChimpCampaign(body)
     .then(({ id }) => updateCampaignContent(id, { html })
       .then(() => scheduleCampaign(id, scheduleDate)
-        .then(() => Promise.resolve('Scheduled Successfully!!!'))))
+        .then(() => {
+          const { campaignDetails: payload } = initialState;
+          dispatch({ type: SAVE_CAMPAIGN_CONTENT, payload });
+          return Promise.resolve('Scheduled Successfully!!!');
+        })))
     .catch(error => Promise.reject({ error, errorMessage: 'Error scheduling campaign, Please try again.' }));
 };

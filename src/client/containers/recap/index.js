@@ -18,7 +18,9 @@ class Recap extends React.Component {
   }
 
   handleNext = () => {
-    const { campaignDetails, sendCampaign, showLoader } = this.props;
+    const {
+      campaignDetails, sendCampaign, showLoader, editComponent
+    } = this.props;
     const {
       listDetails, template: { html }, scheduleDate, subjectLine
     } = campaignDetails;
@@ -30,7 +32,7 @@ class Recap extends React.Component {
           .then(() => {
             showLoader(false);
             this.setState({ showAlert: 'Scheduled Successfully!!!', showErrors: true }, () => {
-              setTimeout(() => this.setState({ showAlert: false }), 3000);
+              setTimeout(() => this.setState({ showAlert: false }, () => editComponent(0)), 1000);
             });
           })
           .catch((error) => {
