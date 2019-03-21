@@ -68,7 +68,7 @@ class CSVUpload extends React.Component {
     });
   };
 
-  handleMenbersUpload = (cb) => {
+  handleMenbersUpload = (cb, isNext = false) => {
     const { csvContent, existingLists, selectedListIndex } = this.state;
     const { addMembers, showLoader } = this.props;
     if (!csvContent) return;
@@ -97,7 +97,7 @@ class CSVUpload extends React.Component {
               // @TODO : enable send button
               this.setState({ showAlert: 'Uploaded Successfully!!!' }, () => {
                 showLoader(false);
-                if (cb) {
+                if (isNext) {
                   cb();
                 } else {
                   setTimeout(() => this.setState({ enabledUpload: false, showAlert: false }), 3000);
@@ -134,7 +134,7 @@ class CSVUpload extends React.Component {
     };
 
     if (enableUpload) {
-      this.handleMenbersUpload(cb);
+      this.handleMenbersUpload(cb, true);
     } else {
       cb();
     }
