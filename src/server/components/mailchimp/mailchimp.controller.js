@@ -1,12 +1,12 @@
 const request = require('request-promise');
 
-const mailchimpConfig = {
-  baseUrl: 'https://us20.api.mailchimp.com/3.0',
-  username: 'any',
-  password: process.env.MAILCHIMP_PASS,
-};
-
 function actualMailchimpRequest(req) {
+  const mailchimpConfig = {
+    baseUrl: 'https://us20.api.mailchimp.com/3.0',
+    username: 'any',
+    password: process.env.MAILCHIMP_PASS,
+  };
+
   const defaultHeaders = {
     // eslint-disable-next-line
     'content-type': 'application/json',

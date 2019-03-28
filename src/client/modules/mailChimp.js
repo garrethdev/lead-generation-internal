@@ -40,7 +40,6 @@ const updateCampaignContent = (id, body) => mailchimpService.updateCampaignConte
 const scheduleCampaign = (id, time) => mailchimpService.scheduleCampaign(id, time);
 
 export const sendCampaign = () => (dispatch, getState) => {
-  debugger;
   const {
     campaignDetails: {
       listDetails, template: { html }, scheduleDate, subjectLine

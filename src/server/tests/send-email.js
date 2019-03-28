@@ -1,13 +1,19 @@
 const request = require('supertest-as-promised');
+const fs = require('fs');
+const path = require('path');
 const chai = require('chai');
 const server = require('../index');
 
 /* eslint prefer-destructuring: 0 */
 const expect = chai.expect;
 chai.config.includeStack = true;
+// const listId = '5d2aee271e';
 const listId = '534613e9ef';
-const htmlContent = '<p> <h2> This is testing template </h2> </p>';
 
+function readFile() {
+  const templatePath = path.resolve(__dirname, 'testTemplate.html');
+  return fs.readFileSync(templatePath, { encoding: 'utf8' });
+}
 /**
  * root level hooks
  */
@@ -53,6 +59,7 @@ describe('## Send email', () => {
 
   describe(`# PUT /api/mailchimp/campaigns/${campaignId}/content`, () => {
     it('should successfully update campaigns with template', (done) => {
+      const htmlContent = readFile();
       request(server)
         .put(`/api/mailchimp/campaigns/${campaignId}/content`)
         .send({ html: htmlContent })
