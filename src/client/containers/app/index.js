@@ -4,12 +4,12 @@ import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Login from '../login';
-import Home from '../home';
-
-import NewCampaign from '../newCampaign';
+import List from '../list';
+import Campaigns from '../campaigns';
 import Route404 from '../route404';
 import './app.css';
 import { logOutUser } from '../../modules/auth';
+import NavigationBar from '../navigationBar';
 
 const App = (props) => {
   const PublicRoute = ({ component: Component, ...rest }) => (
@@ -35,10 +35,11 @@ const App = (props) => {
   return (
     <div className="container app-wrapper">
       <main>
+        {props.user && <NavigationBar />}
         <Switch>
           <PublicRoute exact path="/login" component={Login} />
-          <PrivateRoute exact path="/newCampaign" component={NewCampaign} />
-          <PrivateRoute exact path="/" component={Home} />
+          <PrivateRoute exact path="/campaigns" component={Campaigns} />
+          <PrivateRoute exact path="/" component={List} />
           <Route path="*" component={Route404} />
         </Switch>
       </main>

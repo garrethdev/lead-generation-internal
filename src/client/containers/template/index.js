@@ -33,9 +33,10 @@ class Template extends React.Component {
       <div className="container">
         <br />
         <div className="editor-element">
-          <EmailEditor
-            ref={(editor) => { this.editor = editor; }}
-          />
+          <div id="stripoSettingsContainer">
+            <script src="https://plugins.stripo.email/static/latest/stripo.js" />
+          </div>
+          <div id="stripoPreviewContainer" />
         </div>
         <br />
         <Col md={12}>

@@ -73,7 +73,7 @@ class CSVUpload extends React.Component {
     const { addMembers, showLoader } = this.props;
     if (!csvContent) return;
     if (selectedListIndex === null) {
-      alert('No List Selected');
+      alert('No list Selected');
     } else {
       showLoader(true);
       const listID = existingLists[selectedListIndex];
@@ -94,7 +94,6 @@ class CSVUpload extends React.Component {
           }));
           addMembers(members)
             .then(() => {
-              // @TODO : enable send button
               this.setState({ showAlert: 'Uploaded Successfully!!!' }, () => {
                 showLoader(false);
                 if (isNext) {

@@ -8,14 +8,13 @@ import './home.css';
 
 class Home extends React.Component {
   render() {
-    const { goToNewCampaign } = this.props;
+    const { goToDashboard } = this.props;
 
     return (
       <div>
-        <NavigationBar />
         <div className="container">
           <div className="label-wrapper">
-            <label className="links" onClick={goToNewCampaign}>New Campaign</label>
+            <label className="links" onClick={goToDashboard}>New Campaign</label>
             <br />
             <label className="links" onClick={() => console.log('Ongoing Campaign')}>Ongoing Campaign</label>
           </div>
@@ -28,7 +27,8 @@ class Home extends React.Component {
 const mapStateToProps = state => ({ user: state.auth && state.auth.user });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  goToNewCampaign: () => push('/newCampaign')
+  goToNewCampaign: () => push('/newCampaign'),
+  goToDashboard: () => push('/dashboard')
 }, dispatch);
 
 export default connect(

@@ -1,0 +1,42 @@
+.editor-element iframe {
+    min-width: 500px !important;
+    min-height: 400px !important;
+}
+.error {
+    color: red;
+    font-size: 14px;
+}
+
+.btn-next {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 50px;
+}
+
+.btn-next .btn {
+    min-width: 100px;
+}
+.template-wrapper {
+    max-width: 400px;
+    max-height: 600px;
+    overflow: auto;
+    background-color: white;
+    padding: 10px;
+}
+
+.campaign-container {
+    display: flex;
+    align-items: center;
+}
+
+.schedule-btn {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+hr.style1{
+    border-top: 1px solid #8c8b8b;
+}
