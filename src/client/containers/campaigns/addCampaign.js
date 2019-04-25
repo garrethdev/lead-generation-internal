@@ -65,14 +65,30 @@ export default class AddCampaign extends React.Component {
     e.stopPropagation();
     e.preventDefault();
 
+    const footerTags = (
+      '<footer>\n'
+      + '    <div style="display: none; max-height: 0px; overflow: hidden;">\n'
+      + '        <p>*|LIST:DESCRIPTION|*\n'
+      + '            <a href="*|UNSUB|*">Unsubscribe</a> *|EMAIL|* from this list.\n'
+      + '            Our mailing address is:\n'
+      + '            *|HTML:LIST_ADDRESS_HTML|*\n'
+      + '            Copyright (C) *|CURRENT_YEAR|* *|LIST:COMPANY|* All rights reserved.\n'
+      + '            <a href="*|FORWARD|*">Forward</a> this email to a friend\n'
+      + '            <a href="*|UPDATE_PROFILE|*">Update your profile</a>\n'
+      + '            *|IF:REWARDS|* *|HTML:REWARDS|* *|END:IF|*</p>\n'
+      + '    </div>\n'
+      + '</footer>'
+    );
     const { subjectLine, scheduleDate } = this.state;
     const { addCampaign } = this.props;
     this.editor.exportHtml((data) => {
       const { html, design: htmlDesign } = data;
+      const n = html.lastIndexOf('</body>');
+      const finalHtml = `${html.substring(0, n)}${footerTags}${html.substring(n)}`;
       const campaign = {
         subjectLine,
         scheduleDate,
-        html,
+        html: finalHtml,
         htmlDesign
       };
       addCampaign(campaign);

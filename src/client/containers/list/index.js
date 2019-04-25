@@ -136,7 +136,6 @@ class List extends React.Component {
                     lists.map(l => <option value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
-                <Label>{`${memberCount} contacts available`}</Label>
                 <div>
                   <label htmlFor="file-input-drop" className="dropzone">
                     <FileDrop ref={(ref) => { this.dropRedf = ref; }} accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">

@@ -147,7 +147,6 @@ class Campaigns extends React.Component {
                     lists.map((l, i) => <option value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
-                <Label>{`${memberCount} contacts available`}</Label>
               </Col>
               <Col md={3}>
                 <Button
