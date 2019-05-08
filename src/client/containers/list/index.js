@@ -114,12 +114,15 @@ class List extends React.Component {
     } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
-      <div className="container">
+      <div className="component-bg-wrapper d-flex align-items-center">
         <div className="component-wrapper">
           <Row>
-            <Col md={10}>
+            <Col md={12}>
               <FormGroup>
-                <Label>Contact List</Label>
+                <div className="d-flex align-items-center justify-content-between mb-3">
+                  <h3 className="mb-0">Contact List</h3>
+                  {isLoading && <Spinner style={{ width: '2rem', height: '2rem', marginLeft: 20 }} />}
+                </div>
                 <Input
                   className="list-input"
                   type="select"
@@ -139,7 +142,7 @@ class List extends React.Component {
                 <div>
                   <label htmlFor="file-input-drop" className="dropzone">
                     <FileDrop ref={(ref) => { this.dropRedf = ref; }} accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">
-                      <p style={selectedFileName ? { color: 'black' } : { color: 'gray' }}>{selectedFileName || 'Drop in contact list'}</p>
+                      <p>{selectedFileName || 'Drop in contact list'}</p>
                     </FileDrop>
                     <input type="file" accept=".csv,text/csv" multiple={false} id="file-input-drop" style={{ display: 'none' }} onChange={e => this.onDropFile(e.target.files)} />
                   </label>
@@ -152,13 +155,12 @@ class List extends React.Component {
           </Row>
           <div className="upload-btn">
             <Button
-              color="dark"
               onClick={this.handleMenbersUpload}
               disabled={!enableUpload}
+              className="btn-orange"
             >
               Upload
             </Button>
-            {isLoading && <Spinner style={{ width: '2rem', height: '2rem', marginLeft: 20 }} />}
           </div>
         </div>
         <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>

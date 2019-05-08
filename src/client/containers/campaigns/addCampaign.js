@@ -144,10 +144,9 @@ export default class AddCampaign extends React.Component {
               />
             </div>
           </ModalBody>
-          <ModalFooter>
-            <Button type="submit" id="submit-button" color="primary">Add</Button>
+          <ModalFooter className="p-0">
+            <Button type="submit" id="submit-button" color="primary" className="w-100 mx-auto">Add</Button>
             {' '}
-            <Button color="secondary" onClick={toggleModal}>Cancel</Button>
           </ModalFooter>
         </Form>
       </Modal>

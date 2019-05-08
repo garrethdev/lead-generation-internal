@@ -1,3 +1,30 @@
+header .navbar {
+    border-bottom: 1px solid #74b49b;
+    background-color: white;
+    color: #eee;
+}
+
+header .navbar-light .navbar-text,
+header .navbar-light .navbar-nav .active>.nav-link,
+header .navbar-light .navbar-nav .nav-link.active,
+header .navbar-light .navbar-nav .nav-link.show,
+header .navbar-light .navbar-nav .show>.nav-link,
+header .navbar-light .navbar-nav .nav-link {
+    color: #5c8d89;
+}
+
+a.nav-link.active {
+    font-weight: 600;
+}
+
+header .navbar .navbar-brand {
+    width: 150px;
+}
+
+header .navbar .navbar-collapse {
+    flex-grow: inherit;
+}
+
 .tag-line {
     font-size: 14px;
 }

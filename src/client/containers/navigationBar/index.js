@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownItem
 } from 'reactstrap';
+import logo from '../../../assets/ArborVita-black.png';
 import { NavLink as RRNavLink } from 'react-router-dom';
 import { logOutUser } from '../../modules/auth';
 import { getLists } from '../../modules/mailChimp';
@@ -37,12 +38,19 @@ class NavigationBar extends React.Component {
     const { user: { email = '' } = {}, logOutUser } = this.props;
     const { isOpen } = this.state;
     return (
-      <div>
-        <Navbar color="light" light expand="md">
-          <NavbarBrand href="/">Incertae.io Lead Generation Platform</NavbarBrand>
+      <header>
+        <Navbar light expand="md" className="d-flex align-items-center justify-content-between">
+          <div className="d-flex align-items-end">
+          <NavbarBrand href="/">
+            <img src={logo} alt="Arbor Vita" className="img-fluid" />
+          </NavbarBrand>
+          <span className="navbar-text p-0">
+            Incertae.io Lead Generation Platform
+          </span>
+          </div>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto" navbar>
+            <Nav navbar>
               <NavItem>
                 <NavLink exact to="/" activeClassName="active" tag={RRNavLink}>Lists</NavLink>
               </NavItem>
@@ -62,7 +70,7 @@ class NavigationBar extends React.Component {
             </Nav>
           </Collapse>
         </Navbar>
-      </div>
+      </header>
     );
   }
 }

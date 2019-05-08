@@ -33,8 +33,8 @@ const App = (props) => {
     />
   );
   return (
-    <div className="container app-wrapper">
-      <main>
+    <main>
+      <div>
         {props.user && <NavigationBar />}
         <Switch>
           <PublicRoute exact path="/login" component={Login} />
@@ -42,8 +42,8 @@ const App = (props) => {
           <PrivateRoute exact path="/" component={List} />
           <Route path="*" component={Route404} />
         </Switch>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 };
 

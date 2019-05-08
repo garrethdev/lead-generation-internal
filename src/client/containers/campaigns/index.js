@@ -7,6 +7,8 @@ import {
 import moment from 'moment';
 import { sendCampaign, updateSelectedList } from '../../modules/mailChimp';
 import AddCampaign from './addCampaign';
+import trash from '../../../assets/svg/trash-light.svg';
+import plusLight from '../../../assets/svg/plus-light.svg';
 
 import './campaign.css';
 
@@ -70,11 +72,11 @@ class Campaigns extends React.Component {
   };
 
   renderCampaigns = () => {
-    const { campaigns, isLoading } = this.state;
+    const { campaigns } = this.state;
     if (campaigns.length > 0) {
       // @TODO: add html content to display template
       return (
-        <div>
+        <div className="added-campaign">
           {
             campaigns.map((c, i) => (
               <div>
@@ -87,50 +89,50 @@ class Campaigns extends React.Component {
                     <br />
                     <Label>{`${moment(c.scheduleDate).format('DD MMMM YYYY')} at ${moment(c.scheduleDate).format('hh:mm a')}`}</Label>
                   </Col>
-                  <div>
-                    <Col md={2}>
-                      <Button
-                        color="danger"
-                        onClick={() => this.removeCampaign(i)}
-                      >
-                        cancel
-                      </Button>
-                    </Col>
-                  </div>
+                  <Col md={2} className="text-center">
+                    <Button
+                      color="danger"
+                      className="btn-icon"
+                      onClick={() => this.removeCampaign(i)}
+                    >
+                      <img src={trash} />
+                    </Button>
+                  </Col>
                 </Row>
                 <hr className="style1" />
               </div>
             ))
           }
-          <div className="schedule-btn">
-            <Button
-              color="primary"
-              onClick={this.scheduleCampaigns}
-            >
-              Schedule
-            </Button>
-            {isLoading && <Spinner style={{ width: '2rem', height: '2rem', marginLeft: 20 }} />}
-          </div>
         </div>
       );
     }
     return (
-      <div style={{ display: 'flex', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', opacity: '0.5', marginTop: 50, marginBottom: 30 }}>
         No campaigns added
       </div>
     );
   };
 
   render() {
-    const { modal, showAlert } = this.state;
+    const { modal, showAlert, isLoading, campaigns } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
-      <div className="container">
+      <div className="component-bg-wrapper d-flex align-items-center">
         <div className="component-wrapper">
           <FormGroup>
             <Row>
-              <Col md={9}>
-                <Label>Contact List</Label>
+              <Col md={6} className="mb-3">
+                <h3>Contact List</h3>
+              </Col>
+              <Col md={6} className="text-right mb-3">
+                <Button
+                  className="btn-text w-auto"
+                  onClick={this.toggle}
+                >
+                  <img src={plusLight} alt="Add Campaign" className="mr-1" /> Add campaign
+                </Button>
+              </Col>
+              <Col md={12}>
                 <Input
                   className="list-input"
                   type="select"
@@ -148,18 +150,22 @@ class Campaigns extends React.Component {
                   }
                 </Input>
               </Col>
-              <Col md={3}>
-                <Button
-                  color="dark"
-                  onClick={this.toggle}
-                >
-                  Add campaign
-                </Button>
-              </Col>
             </Row>
           </FormGroup>
           <div>
             {this.renderCampaigns()}
+          </div>
+          <div className="text-right">
+            {isLoading && <Spinner style={{ width: '2rem', height: '2rem', marginRight: 20, marginBottom: '-10px' }} />}
+            {
+              campaigns.length > 0 && <Button
+                color="dark"
+                className="btn-orange w-25"
+                onClick={this.scheduleCampaigns}
+              >
+                Schedule
+              </Button>
+            }
           </div>
         </div>
         <Alert className={showAlert === 'Error' ? 'danger' : 'success-alert'} color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>

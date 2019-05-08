@@ -10,6 +10,7 @@ import {
   logInUser,
   logOutUser,
 } from '../../modules/auth';
+import logo from '../../../assets/ArborVita-black.png';
 
 import './login.css';
 
@@ -55,25 +56,27 @@ class Login extends React.Component {
   render() {
     const { credentials } = this.state;
     return (
-      <div className="login-wrapper">
-        <Form onSubmit={this.handleSubmit}>
-          <FormGroup row>
-            <Col sm={10}>
-              Email
-              <Input type="email" name="email" id="email-input" placeholder="Email" value={credentials.email} onChange={this.handleChange} required />
-            </Col>
-          </FormGroup>
-          <FormGroup row>
-            <Col sm={10}>
-              Password
-              <Input type="password" name="password" id="password-input" placeholder="Password" value={credentials.password} onChange={this.handleChange} required />
-            </Col>
-          </FormGroup>
-          <FormGroup check row>
-            <br />
-            <Button type="submit" id="submit-button">Submit</Button>
-          </FormGroup>
-        </Form>
+      <div className="d-flex align-items-center justify-content-center login-container">
+        <div className="login-wrapper">
+          <img src={logo} alt="Arbor Vita" className="logo" />
+          <Form onSubmit={this.handleSubmit}>
+            <FormGroup row>
+              <Col sm={12}>
+                <Input type="email" name="email" id="email-input" placeholder="Email" value={credentials.email} onChange={this.handleChange} required />
+              </Col>
+            </FormGroup>
+            <FormGroup row>
+              <Col sm={12}>
+                <Input type="password" name="password" id="password-input" placeholder="Password" value={credentials.password} onChange={this.handleChange} required />
+              </Col>
+            </FormGroup>
+            <FormGroup row>
+              <Col sm={12}>
+                <Button type="submit" id="submit-button" className="w-100 mt-4">Log In</Button>
+              </Col>
+            </FormGroup>
+          </Form>
+        </div>
       </div>
     );
   }

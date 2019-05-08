@@ -1,12 +1,12 @@
-.container {
-    background-color: #d9d9d9;
-    margin-top: 20px;
-    margin-bottom: 20px;
+@import url('https://fonts.googleapis.com/css?family=Playfair+Display:400,700,900');
+@import url('https://fonts.googleapis.com/css?family=Libre+Baskerville');
+
+
+body main {
+    /*font-family: 'Playfair Display', serif;*/
+    font-family: 'Libre Baskerville', serif;
 }
 
-.app-wrapper {
-    min-height: 700px;
-}
 .tag-line {
     font-size: 14px;
 }
@@ -29,14 +29,14 @@ main {
     background: #fff;
     position: relative;
 }
-.rdt input[type="text"] {
-    width: 230px;
-    background: #ffffff;
-}
-.rdtPicker input[text] {
-    width: 230px;
-    background: #ffffff;
-}
+/*.rdt input[type="text"] {*/
+    /*width: 230px;*/
+    /*background: #ffffff;*/
+/*}*/
+/*.rdtPicker input[text] {*/
+    /*width: 230px;*/
+    /*background: #ffffff;*/
+/*}*/
 .date-format h5 {
     position: absolute;
     top: 50%;

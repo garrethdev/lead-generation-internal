@@ -31,12 +31,81 @@
     align-items: center;
 }
 
-.schedule-btn {
-    display: flex;
-    align-items: center;
-    margin-top: 20px;
+hr.style1{
+    border-top: 1px solid #f4f9f4;
 }
 
-hr.style1{
-    border-top: 1px solid #8c8b8b;
+.btn.btn-orange:hover.disabled {
+    cursor: not-allowed;
+}
+
+.btn.btn-orange,
+.btn.btn-orange:hover,
+.btn.btn-orange:not(:disabled):not(.disabled):active {
+    width: 100%;
+    cursor: pointer;
+    background-color: white;
+    color: #5c8d89;
+    border-color: #74b49b;
+    border-radius: 0;
+    box-shadow: 0 0.125rem 0.25rem rgba(34, 40, 49, 0.5);
+}
+
+.btn.btn-black,
+.btn.btn-black:hover,
+.btn.btn-black:not(:disabled):not(.disabled):active:focus{
+    background-color: #a7d7c5;
+    border: 0;
+}
+
+.btn.btn-icon,
+.btn.btn-icon:hover,
+.btn.btn-icon:not(:disabled):not(.disabled):active:focus {
+    background: transparent;
+    color: rgba(34, 40, 49, 1);
+    padding: 0;
+    border: 0;
+}
+
+.btn.btn-icon img,
+.btn img {
+    display: inline-block;
+    width: 20px;
+}
+
+.added-campaign {
+    max-height: calc(100vh - 310px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin: 15px -30px;
+    padding: 10px 30px;
+}
+
+.btn.btn-text,
+.btn.btn-text:hover,
+.btn.btn-text:not(:disabled):not(.disabled):active:focus,
+.btn.btn-text:focus {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.btn.btn-text span {
+    font-size: 18px;
+}
+
+.modal .modal-dialog .modal-header,
+.modal .modal-dialog .modal-footer {
+    background-color: #5c8d89;
+    color: #f4f9f4;
+}
+
+.modal .modal-dialog .modal-header button {
+    color: #f4f9f4;
+    opacity: 1;
+}
+
+.modal .modal-dialog .modal-body .form-control {
+    border-radius: 0;
+    background: transparent;
 }
