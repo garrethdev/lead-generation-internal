@@ -136,12 +136,21 @@ class List extends React.Component {
                   }}
                 >
                   {
-                    lists.map(l => <option value={l.id} key={l.id}>{l.name}</option>)
+                    lists.map(l => <option style={{ backgroundColor: 'red'}} value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
                 <div>
-                  <label htmlFor="file-input-drop" className="dropzone">
-                    <FileDrop ref={(ref) => { this.dropRedf = ref; }} accept=".csv,text/csv" multiple={false} onDrop={this.onDropFile} className="drop-container">
+                  <label
+                    htmlFor="file-input-drop"
+                    className={selectedFileName ? 'dropzone' : 'dropzone empty'}
+                  >
+                    <FileDrop
+                      ref={(ref) => { this.dropRedf = ref; }}
+                      accept=".csv,text/csv"
+                      multiple={false}
+                      onDrop={this.onDropFile}
+                      className="drop-container"
+                    >
                       <p>{selectedFileName || 'Drop in contact list'}</p>
                     </FileDrop>
                     <input type="file" accept=".csv,text/csv" multiple={false} id="file-input-drop" style={{ display: 'none' }} onChange={e => this.onDropFile(e.target.files)} />

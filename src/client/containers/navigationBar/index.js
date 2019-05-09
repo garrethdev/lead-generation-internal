@@ -63,7 +63,7 @@ class NavigationBar extends React.Component {
                 </DropdownToggle>
                 <DropdownMenu right>
                   <DropdownItem onClick={logOutUser}>
-                    Logout
+                    <span style={{ color: '#5c8d89' }}>Logout</span>
                   </DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>

@@ -44,15 +44,24 @@
     height: 150px;
     background-color: transparent;
     color: #f4f9f4;
-    border-bottom: 1px solid #f4f9f4;
+    border: 1px dotted #f4f9f4;
     padding: 10px;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
     border-radius: 0;
     display: flex;
 }
 
 .drop-container {
     flex: 1;
+}
+
+.empty {
+    background-color: rgba(255, 255, 255, 0.3);
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    text-align: center;
 }
 
 .selected-list-item {
