@@ -45,7 +45,7 @@ class NavigationBar extends React.Component {
             <img src={logo} alt="Arbor Vita" className="img-fluid" />
           </NavbarBrand>
           <span className="navbar-text p-0">
-            Incertae.io Lead Generation Platform
+            Lead Generation Platform
           </span>
           </div>
           <NavbarToggler onClick={this.toggle} />
