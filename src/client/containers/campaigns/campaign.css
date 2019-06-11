@@ -109,3 +109,16 @@ hr.style1{
     border-radius: 0;
     background: transparent;
 }
+
+.modal-dialog {
+    max-width: 90% !important;;
+    height: 90%;
+    margin: 10px;
+    padding: 0;
+}
+.modal-content {
+    width: 90%;
+    height: auto;
+    min-height: 90%;
+    border-radius: 0;
+}

@@ -107,14 +107,19 @@ class Campaigns extends React.Component {
       );
     }
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', opacity: '0.5', marginTop: 50, marginBottom: 30 }}>
+      <div style={{
+        display: 'flex', justifyContent: 'center', opacity: '0.5', marginTop: 50, marginBottom: 30
+      }}
+      >
         No campaigns added
       </div>
     );
   };
 
   render() {
-    const { modal, showAlert, isLoading, campaigns } = this.state;
+    const {
+      modal, showAlert, isLoading, campaigns
+    } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
       <div className="component-bg-wrapper d-flex align-items-center">
@@ -129,7 +134,9 @@ class Campaigns extends React.Component {
                   className="btn-text w-auto"
                   onClick={this.toggle}
                 >
-                  <img src={plusLight} alt="Add Campaign" className="mr-1" /> Add campaign
+                  <img src={plusLight} alt="Add Campaign" className="mr-1" />
+                  {' '}
+Add campaign
                 </Button>
               </Col>
               <Col md={12}>
@@ -142,11 +149,12 @@ class Campaigns extends React.Component {
                   onChange={(event) => {
                     const { value } = event.target;
                     const index = lists.findIndex(l => l.id === value);
-                    this.handleList(lists[index]);
+                    if (index > -1) { this.handleList(lists[index]); }
                   }}
                 >
+                  <option disabled value="" key="">Choose from your list</option>
                   {
-                    lists.map((l, i) => <option value={l.id} key={l.id}>{l.name}</option>)
+                    lists.map(l => <option value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
               </Col>
@@ -156,15 +164,22 @@ class Campaigns extends React.Component {
             {this.renderCampaigns()}
           </div>
           <div className="text-right">
-            {isLoading && <Spinner style={{ width: '2rem', height: '2rem', marginRight: 20, marginBottom: '-10px' }} />}
+            {isLoading && (
+            <Spinner style={{
+              width: '2rem', height: '2rem', marginRight: 20, marginBottom: '-10px'
+            }}
+            />
+            )}
             {
-              campaigns.length > 0 && <Button
+              campaigns.length > 0 && (
+              <Button
                 color="dark"
                 className="btn-orange w-25"
                 onClick={this.scheduleCampaigns}
               >
                 Schedule
               </Button>
+              )
             }
           </div>
         </div>

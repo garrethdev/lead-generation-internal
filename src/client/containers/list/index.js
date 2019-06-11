@@ -132,11 +132,12 @@ class List extends React.Component {
                   onChange={(event) => {
                     const { value } = event.target;
                     const index = lists.findIndex(l => l.id === value);
-                    this.handleList(lists[index]);
+                    if (index > -1) { this.handleList(lists[index]); }
                   }}
                 >
+                  <option disabled value="" key="">Choose from your list</option>
                   {
-                    lists.map(l => <option style={{ backgroundColor: 'red'}} value={l.id} key={l.id}>{l.name}</option>)
+                    lists.map(l => <option value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
                 <div>

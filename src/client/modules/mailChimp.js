@@ -52,16 +52,16 @@ export const getLists = () => dispatch => mailchimpService.getLists()
   .then(({ lists: response }) => {
     const lists = _.map(response, l => _.pick(l, ['id', 'name', 'campaign_defaults', 'stats.member_count']));
     dispatch({ type: GET_LIST, payload: lists });
-    dispatch(updateSelectedList(lists.length > 0 ? lists[0] : {}));
+    // dispatch(updateSelectedList(lists.length > 0 ? lists[0] : {}));
     return lists;
   })
   .catch((error) => {
     dispatch({ type: GET_LIST, payload: [] });
-    dispatch(updateSelectedList({}));
+    // dispatch(updateSelectedList({}));
     return Promise.reject(error);
   });
 
-export const addMembers = members => dispatch => mailchimpService.batchSubmit(members);
+export const addMembers = members => mailchimpService.batchSubmit(members);
 export const updateNewCampaign = payload => ({ type: SAVE_CAMPAIGN_CONTENT, payload });
 
 const addMailChimpCampaign = body => mailchimpService.addMailChimpCampaign(body);

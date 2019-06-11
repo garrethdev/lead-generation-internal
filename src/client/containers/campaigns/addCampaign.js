@@ -99,8 +99,8 @@ export default class AddCampaign extends React.Component {
     const { modalOpen, toggleModal } = this.props;
     const { subjectLine, scheduleDate } = this.state;
     return (
-      <Modal size="lg" isOpen={modalOpen} toggle={toggleModal}>
-        <Form onSubmit={this.handleSubmit}>
+      <Modal className="modal-dialog" isOpen={modalOpen} toggle={toggleModal}>
+        <Form className="modal-content" onSubmit={this.handleSubmit}>
           <ModalHeader toggle={toggleModal}>Campaign</ModalHeader>
           <ModalBody>
             <div>
