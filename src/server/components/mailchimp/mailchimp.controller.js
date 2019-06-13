@@ -1,8 +1,9 @@
 const request = require('request-promise');
 
 function actualMailchimpRequest(req) {
+  const countryCode = process.env.MAILCHIMP_PASS.split('-')[1];
   const mailchimpConfig = {
-    baseUrl: 'https://us20.api.mailchimp.com/3.0',
+    baseUrl: `https://${countryCode}.api.mailchimp.com/3.0`,
     username: 'any',
     password: process.env.MAILCHIMP_PASS,
   };

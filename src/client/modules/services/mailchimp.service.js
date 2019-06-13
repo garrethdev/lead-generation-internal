@@ -7,6 +7,12 @@ export function batchSubmit(body) {
     .catch(error => Promise.reject(error));
 }
 
+export function addSingleMember(listID, body) {
+  return axios.post(`/lists/${listID}/members`, { operations: body })
+    .then(({ data }) => Promise.resolve(data))
+    .catch(error => Promise.reject(error));
+}
+
 export function addMailChimpCampaign(body) {
   return axios.post('/api/mailchimp/campaigns', body)
     .then(({ data }) => Promise.resolve(data))
@@ -40,5 +46,5 @@ export function getLists() {
 }
 
 export default {
-  batchSubmit, addMailChimpCampaign, updateCampaignContent, sendCampaign, scheduleCampaign, getLists
+  batchSubmit, addMailChimpCampaign, addSingleMember, updateCampaignContent, sendCampaign, scheduleCampaign, getLists
 };

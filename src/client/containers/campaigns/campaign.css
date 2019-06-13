@@ -2,6 +2,9 @@
     min-width: 500px !important;
     min-height: 400px !important;
 }
+.box {
+    border: 1px solid rgb(199, 199, 199);
+}
 .error {
     color: red;
     font-size: 14px;
@@ -110,14 +113,14 @@ hr.style1{
     background: transparent;
 }
 
-.modal-dialog {
-    max-width: 90% !important;;
+.add-campaign-modal-dialog {
+    max-width: 95% !important;;
     height: 90%;
     margin: 10px;
     padding: 0;
 }
-.modal-content {
-    width: 90%;
+.add-campaign-modal-content {
+    width: 95%;
     height: auto;
     min-height: 90%;
     border-radius: 0;

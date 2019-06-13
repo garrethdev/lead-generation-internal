@@ -7,10 +7,11 @@ import {
 import FileDrop from 'react-file-drop';
 import csv from 'csvtojson';
 import {
-  addMembers, getLists, updateNewCampaign, updateSelectedList
+  addMembers, addSingleMember, getLists, updateNewCampaign, updateSelectedList
 } from '../../modules/mailChimp';
 
 import './list.css';
+import AddMember from './addMember';
 
 class List extends React.Component {
   constructor(props) {
@@ -21,11 +22,14 @@ class List extends React.Component {
       selectedFileName: undefined,
       existingLists: [],
       selectedListIndex: null,
-      isLoading: false
+      isLoading: false,
+      modal: false
     };
   }
 
   showLoader = (loading = false) => this.setState({ isLoading: loading });
+
+  toggle = () => this.setState({ modal: !this.state.modal });
 
   onDropFile = (files) => {
     if (files[0].type !== 'text/csv') {
@@ -81,7 +85,7 @@ class List extends React.Component {
             })
           }));
           addMembers(members)
-            .then((response) => {
+            .then(() => {
               this.setState({
                 showAlert: 'Uploaded Successfully!!!', csvContent: null, enableUpload: false, selectedFileName: undefined, csvError: false
               }, () => {
@@ -103,6 +107,32 @@ class List extends React.Component {
     }
   };
 
+  onAddMember = (details) => {
+    debugger;
+    const { selectedList: { id } } = this.props;
+    const body = {
+      email_address: details.email,
+      status: 'subscribed',
+      merge_fields: {
+        FNAME: details.firstName,
+        LNAME: details.lastName,
+        COMPANY: details.companyName
+      }
+    };
+
+    addSingleMember(id, body)
+      .then((response) => {
+        debugger;
+      })
+      .catch((error) => {
+        debugger;
+      })
+      .finally(() => {
+        debugger;
+      });
+    // this.toggle();
+  };
+
   handleList = (list) => {
     const { updateSelectedList } = this.props;
     updateSelectedList(list);
@@ -110,7 +140,7 @@ class List extends React.Component {
 
   render() {
     const {
-      csvError, enableUpload, isLoading, selectedFileName, showAlert
+      csvError, enableUpload, isLoading, modal, selectedFileName, showAlert
     } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
@@ -172,10 +202,20 @@ class List extends React.Component {
               Upload
             </Button>
           </div>
+          <div className="upload-btn">
+            <Button
+              onClick={this.toggle}
+              disabled={!id}
+              className="btn-orange"
+            >
+              Add member
+            </Button>
+          </div>
         </div>
         <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
           {showAlert}
         </Alert>
+        <AddMember modalOpen={modal} toggleModal={this.toggle} addMember={this.onAddMember} />
       </div>
     );
   }
@@ -189,6 +229,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   addMembers,
+  addSingleMember,
   getLists,
   updateNewCampaign,
   updateSelectedList

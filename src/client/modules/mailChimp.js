@@ -62,6 +62,7 @@ export const getLists = () => dispatch => mailchimpService.getLists()
   });
 
 export const addMembers = members => mailchimpService.batchSubmit(members);
+export const addSingleMember = (listID, body) => mailchimpService.addSingleMember(listID, body);
 export const updateNewCampaign = payload => ({ type: SAVE_CAMPAIGN_CONTENT, payload });
 
 const addMailChimpCampaign = body => mailchimpService.addMailChimpCampaign(body);

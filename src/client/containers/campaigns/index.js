@@ -26,9 +26,7 @@ class Campaigns extends React.Component {
     updateSelectedList(list);
   };
 
-  toggle = () => {
-    this.setState({ modal: !this.state.modal });
-  };
+  toggle = () => this.setState({ modal: !this.state.modal });
 
   onAddCampaign = (campaign) => {
     const { campaigns } = this.state;

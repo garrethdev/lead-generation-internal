@@ -13,10 +13,6 @@ body main {
 main {
     position: relative;
 }
-.editor-element iframe {
-    min-width: 500px !important;
-    min-height: 400px !important;
-}
 .nxt-btn {
     position: absolute;
     bottom: 0;
