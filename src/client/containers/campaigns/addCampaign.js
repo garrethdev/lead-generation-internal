@@ -102,8 +102,7 @@ export default class AddCampaign extends React.Component {
     if (!this.backgroundSet) {
       this.editor.exportHtml((data) => {
         const { design } = data;
-        console.log('set background white');
-        design.body.values.backgroundColor = '#ffffff';
+        design.body.values.backgroundColor = '#fff';
         this.editor.loadDesign(design);
         this.backgroundSet = true;
       });
