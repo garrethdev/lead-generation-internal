@@ -14,6 +14,8 @@ const minuteInterval = 15;
 export default class AddCampaign extends React.Component {
   editor = null;
 
+    backgroundSet = false;
+
   state = { subjectLine: '', scheduleDate: undefined };
 
   componentWillMount() {
@@ -95,6 +97,19 @@ export default class AddCampaign extends React.Component {
     });
   };
 
+
+  onEditorDesignLoad = () => {
+    if (!this.backgroundSet) {
+      this.editor.exportHtml((data) => {
+        const { design } = data;
+        console.log('set background white');
+        design.body.values.backgroundColor = '#ffffff';
+        this.editor.loadDesign(design);
+        this.backgroundSet = true;
+      });
+    }
+  };
+
   render() {
     const { modalOpen, toggleModal } = this.props;
     const { subjectLine, scheduleDate } = this.state;
@@ -141,6 +156,7 @@ export default class AddCampaign extends React.Component {
             <div className="editor-element box">
               <EmailEditor
                 ref={editor => this.editor = editor}
+                onDesignLoad={this.onEditorDesignLoad}
               />
             </div>
           </ModalBody>
