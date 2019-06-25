@@ -108,7 +108,6 @@ class List extends React.Component {
   };
 
   onAddMember = (details) => {
-    debugger;
     const { selectedList: { id } } = this.props;
     const body = {
       email_address: details.email,
@@ -122,17 +121,26 @@ class List extends React.Component {
 
     addSingleMember(id, body)
       .then((response) => {
-        debugger;
+        this.handleAlert('Member added Successfully!!!');
       })
       .catch((error) => {
-        debugger;
+        this.handleAlert('Something went wrong.', 'danger')
       })
       .finally(() => {
-        debugger;
+        this.toggle()
       });
     // this.toggle();
   };
 
+  handleAlert = (message, type) => {
+    this.setState({
+      showAlert: message,
+      alertType: type
+    }, () => {
+      this.showLoader(false);
+      setTimeout(() => this.setState({ showAlert: false, alertType: undefined }), 3000);
+    });
+  }
   handleList = (list) => {
     const { updateSelectedList } = this.props;
     updateSelectedList(list);
@@ -140,7 +148,7 @@ class List extends React.Component {
 
   render() {
     const {
-      csvError, enableUpload, isLoading, modal, selectedFileName, showAlert
+      csvError, enableUpload, isLoading, modal, selectedFileName, showAlert, alertType = 'success'
     } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
@@ -165,9 +173,9 @@ class List extends React.Component {
                     if (index > -1) { this.handleList(lists[index]); }
                   }}
                 >
-                  <option disabled value="" key="">Choose from your list</option>
+                  <option value="" key="">Choose from your list</option>
                   {
-                    lists.map(l => <option value={l.id} key={l.id}>{l.name}</option>)
+                    lists.map(l => <option className='dropdown-options' value={l.id} key={l.id}>{l.name}</option>)
                   }
                 </Input>
                 <div>
@@ -212,7 +220,7 @@ class List extends React.Component {
             </Button>
           </div>
         </div>
-        <Alert className="success-alert" color="success" isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
+        <Alert className="success-alert" color={alertType} isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
           {showAlert}
         </Alert>
         <AddMember modalOpen={modal} toggleModal={this.toggle} addMember={this.onAddMember} />

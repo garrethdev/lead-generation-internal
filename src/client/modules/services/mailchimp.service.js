@@ -8,7 +8,7 @@ export function batchSubmit(body) {
 }
 
 export function addSingleMember(listID, body) {
-  return axios.post(`/lists/${listID}/members`, { operations: body })
+  return axios.post(`/api/mailchimp/lists/${listID}/members`, body)
     .then(({ data }) => Promise.resolve(data))
     .catch(error => Promise.reject(error));
 }

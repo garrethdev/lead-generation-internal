@@ -34,7 +34,6 @@ export default class AddMember extends React.Component {
     e.preventDefault();
 
     const { addMember } = this.props;
-    debugger
     addMember(this.state);
   };
 
