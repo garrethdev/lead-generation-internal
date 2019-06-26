@@ -111,3 +111,8 @@
     border-color: #74b49b;
     border-radius: 0;
 }
+
+.table-container {
+    max-height: 400px;
+    overflow-y: auto;
+}

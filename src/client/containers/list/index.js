@@ -12,6 +12,7 @@ import {
 
 import './list.css';
 import AddMember from './addMember';
+import MemberList from './memberList';
 
 class List extends React.Component {
   constructor(props) {
@@ -23,13 +24,16 @@ class List extends React.Component {
       existingLists: [],
       selectedListIndex: null,
       isLoading: false,
-      modal: false
+      addMemberModal: false,
+      memberListModal: false,
+      uploadedMembers: []
     };
   }
 
   showLoader = (loading = false) => this.setState({ isLoading: loading });
 
-  toggle = () => this.setState({ modal: !this.state.modal });
+  toggleAddMemberModal = () => this.setState({ addMemberModal: !this.state.addMemberModal });
+  toggleMemberListModal = () => this.setState({ memberListModal: !this.state.memberListModal });
 
   onDropFile = (files) => {
     if (files[0].type !== 'text/csv') {
@@ -60,9 +64,18 @@ class List extends React.Component {
     });
   };
 
+  handleFilePreview = () => {
+    const { csvContent } = this.state;
+    csv().fromString(csvContent)
+    .then(members => {
+      this.setState({uploadedMembers: members});
+      this.toggleMemberListModal();
+    });
+  }
+
   handleMenbersUpload = () => {
     const { csvContent } = this.state;
-    const { addMembers, selectedList } = this.props;
+    const { selectedList } = this.props;
     if (!csvContent) return;
     const { id: listID } = selectedList;
     if (!listID) {
@@ -120,16 +133,16 @@ class List extends React.Component {
     };
 
     addSingleMember(id, body)
-      .then((response) => {
+      .then(() => {
         this.handleAlert('Member added Successfully!!!');
       })
       .catch((error) => {
-        this.handleAlert('Something went wrong.', 'danger')
+        console.log('Error in add member :', error);
+        this.handleAlert('Something went wrong, Please try again later.', 'danger')
       })
       .finally(() => {
-        this.toggle()
+        this.toggleAddMemberModal()
       });
-    // this.toggle();
   };
 
   handleAlert = (message, type) => {
@@ -148,7 +161,7 @@ class List extends React.Component {
 
   render() {
     const {
-      csvError, enableUpload, isLoading, modal, selectedFileName, showAlert, alertType = 'success'
+      csvError, enableUpload, uploadedMembers, isLoading, addMemberModal, memberListModal, selectedFileName, showAlert, alertType = 'success'
     } = this.state;
     const { lists = [], selectedList: { id = '', stats: { member_count: memberCount = 0 } = {} } = {} } = this.props;
     return (
@@ -212,7 +225,16 @@ class List extends React.Component {
           </div>
           <div className="upload-btn">
             <Button
-              onClick={this.toggle}
+              onClick={this.handleFilePreview}
+              disabled={!this.state.csvContent}
+              className="btn-orange"
+            >
+              File Preview
+            </Button>
+          </div>
+          <div className="upload-btn">
+            <Button
+              onClick={this.toggleAddMemberModal}
               disabled={!id}
               className="btn-orange"
             >
@@ -223,7 +245,8 @@ class List extends React.Component {
         <Alert className="success-alert" color={alertType} isOpen={!!showAlert} toggle={() => this.setState({ showAlert: false })}>
           {showAlert}
         </Alert>
-        <AddMember modalOpen={modal} toggleModal={this.toggle} addMember={this.onAddMember} />
+        <AddMember modalOpen={addMemberModal} toggleModal={this.toggleAddMemberModal} addMember={this.onAddMember} />
+        <MemberList modalOpen={memberListModal} toggleModal={this.toggleMemberListModal} members={uploadedMembers} />
       </div>
     );
   }
@@ -236,8 +259,6 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => bindActionCreators({
-  addMembers,
-  addSingleMember,
   getLists,
   updateNewCampaign,
   updateSelectedList
