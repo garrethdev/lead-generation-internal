@@ -21,7 +21,7 @@
     "connected-react-router": "^6.3.1",
     "csvtojson": "^2.0.8",
     "dotenv": "^6.2.0",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "express-validation": "^1.0.2",
     "globalize": "^1.4.2",
     "history": "^4.7.2",
